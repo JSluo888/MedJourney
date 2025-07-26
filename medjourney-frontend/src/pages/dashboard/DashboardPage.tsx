@@ -223,8 +223,8 @@ const DashboardPage: React.FC = () => {
                   <FileText className="w-5 h-5 text-green-600" />
                 </div>
                 <div className="ml-3">
-                  <p className="font-medium text-gray-900">导入病史</p>
-                  <p className="text-sm text-gray-600">上传医疗文档和图片</p>
+                  <p className="font-medium text-gray-900">病史助手</p>
+                  <p className="text-sm text-gray-600">AI驱动的多模态病史整理</p>
                 </div>
               </Link>
 

@@ -13,6 +13,7 @@ import {
 import { useAppStore } from '../stores/useAppStore';
 import { CaseAssessment, CaseImage } from '../types';
 import { ROUTES } from '../constants';
+import { assessmentService } from '../services/assessment-service';
 
 const AssessmentCasePage: React.FC = () => {
   const navigate = useNavigate();
@@ -119,10 +120,21 @@ const AssessmentCasePage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      console.log('病例资料数据:', formData);
-      navigate(ROUTES.ASSESSMENT_CHAT);
+      try {
+        // 提交病例评估数据
+        await assessmentService.submitCaseAssessment(formData);
+        
+        // 保存会话到本地存储
+        assessmentService.saveSessionToStorage();
+        
+        console.log('病例资料数据已保存:', formData);
+        navigate(ROUTES.ASSESSMENT_CHAT);
+      } catch (error) {
+        console.error('保存病例资料失败:', error);
+        // 这里可以添加错误提示UI
+      }
     }
   };
 

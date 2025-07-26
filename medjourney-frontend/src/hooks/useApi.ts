@@ -138,12 +138,17 @@ export function useMessages(userId?: string) {
   const [state, setData, setLoading, setError] = useApiState<Message[]>([]);
 
   const fetchMessages = useCallback(async (id: string) => {
+    console.log('开始获取消息，用户ID:', id);
     setLoading(true);
     try {
       const messages = await api.messages.get(id);
+      console.log('获取消息成功:', messages.length, '条');
       setData(messages);
     } catch (error) {
+      console.error('获取消息失败:', error);
       setError(error instanceof Error ? error.message : '获取消息失败');
+      // 即使失败也设置空数组，避免loading状态卡住
+      setData([]);
     }
   }, [setData, setLoading, setError]);
 
@@ -158,7 +163,7 @@ export function useMessages(userId?: string) {
       setError(errorMessage);
       throw new Error(errorMessage);
     }
-  }, [setData, setError]);
+  }, [setData, setError, state.data]);
 
   const clearMessages = useCallback(async (id: string) => {
     setLoading(true);
@@ -194,13 +199,17 @@ export function useMessages(userId?: string) {
       setError(errorMessage);
       throw new Error(errorMessage);
     }
-  }, [addMessage, setData, setError]);
+  }, [addMessage, setData, setError, state.data]);
 
   useEffect(() => {
     if (userId) {
+      console.log('useMessages: 用户ID变化，重新获取消息:', userId);
       fetchMessages(userId);
+    } else {
+      console.log('useMessages: 没有用户ID，设置空消息列表');
+      setData([]);
     }
-  }, [userId, fetchMessages]);
+  }, [userId, fetchMessages, setData]);
 
   return {
     ...state,
@@ -335,23 +344,28 @@ export function useCognitiveAssessment() {
 
 // 报告生成Hooks
 export function useReports() {
-  const [state, setData, setLoading, setError] = useApiState<Blob>();
+  const [state, setData, setLoading, setError] = useApiState<Blob | any>();
 
-  const generateFamilyReport = useCallback(async (userId: string) => {
+  const generateFamilyReport = useCallback(async (userId: string, format: 'pdf' | 'json' = 'pdf') => {
     setLoading(true);
     try {
-      const report = await api.reports.generateFamilyReport(userId);
+      const report = await api.reports.generateFamilyReport(userId, format);
       setData(report);
       
-      // 自动下载
-      const url = URL.createObjectURL(report);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `家属简报-${new Date().toLocaleDateString('zh-CN')}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // 根据格式处理下载
+      if (format === 'pdf') {
+        const url = URL.createObjectURL(report);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `家属简报-${new Date().toLocaleDateString('zh-CN')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        // JSON格式直接返回数据
+        return report;
+      }
       
       return report;
     } catch (error) {
@@ -361,21 +375,26 @@ export function useReports() {
     }
   }, [setData, setLoading, setError]);
 
-  const generateDoctorReport = useCallback(async (sessionId: string) => {
+  const generateDoctorReport = useCallback(async (sessionId: string, format: 'pdf' | 'json' = 'pdf') => {
     setLoading(true);
     try {
-      const report = await api.reports.generateDoctorReport(sessionId);
+      const report = await api.reports.generateDoctorReport(sessionId, format);
       setData(report);
       
-      // 自动下载
-      const url = URL.createObjectURL(report);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `医生报告-${sessionId}-${new Date().toLocaleDateString('zh-CN')}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // 根据格式处理下载
+      if (format === 'pdf') {
+        const url = URL.createObjectURL(report);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `医生报告-${sessionId}-${new Date().toLocaleDateString('zh-CN')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else {
+        // JSON格式直接返回数据
+        return report;
+      }
       
       return report;
     } catch (error) {
@@ -385,10 +404,49 @@ export function useReports() {
     }
   }, [setData, setLoading, setError]);
 
+  const getReportsList = useCallback(async (patientId: string) => {
+    setLoading(true);
+    try {
+      const reports = await api.reports.getReportsList(patientId);
+      setData(reports);
+      return reports;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '获取报告列表失败';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }, [setData, setLoading, setError]);
+
+  const downloadReport = useCallback(async (reportId: string) => {
+    setLoading(true);
+    try {
+      const report = await api.reports.downloadReport(reportId);
+      setData(report);
+      
+      // 自动下载
+      const url = URL.createObjectURL(report);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `报告-${reportId}-${new Date().toLocaleDateString('zh-CN')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      return report;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : '下载报告失败';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    }
+  }, [setData, setLoading, setError]);
+
   return {
     ...state,
     generateFamilyReport,
-    generateDoctorReport
+    generateDoctorReport,
+    getReportsList,
+    downloadReport
   };
 }
 

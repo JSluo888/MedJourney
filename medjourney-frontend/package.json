@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "yes | pnpm install && rm -rf node_modules/.vite-temp && tsc -b && vite build",
-    "lint": "yes | pnpm install && eslint .",
-    "preview": "yes | pnpm install && vite preview"
+    "build": "npm install && tsc -b && vite build",
+    "lint": "npm install && eslint .",
+    "preview": "npm install && vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

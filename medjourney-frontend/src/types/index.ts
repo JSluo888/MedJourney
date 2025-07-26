@@ -8,6 +8,7 @@ export interface User {
   age?: number;
   medicalHistory?: string;
   avatar?: string;
+  role?: 'patient' | 'family' | 'doctor';
 }
 
 // 消息类型

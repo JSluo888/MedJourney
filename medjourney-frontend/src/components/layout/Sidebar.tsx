@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
     roles: ['patient', 'family']
   },
   {
-    name: '病史导入',
+    name: '病史助手',
     href: ROUTES.HISTORY,
     icon: FileText,
     roles: ['patient', 'family']

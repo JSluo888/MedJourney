@@ -129,6 +129,49 @@ export class LocalDatabaseService implements DatabaseService {
         )
       `);
 
+      // 评估数据表
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS assessments (
+          id TEXT PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          assessment_type TEXT NOT NULL,
+          assessment_data TEXT NOT NULL,
+          submitted_by TEXT,
+          submitted_at TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          FOREIGN KEY (session_id) REFERENCES conversation_sessions (id)
+        )
+      `);
+
+      // 评估分析表
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS assessment_analyses (
+          id TEXT PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          analysis_data TEXT NOT NULL,
+          analysis_type TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (session_id) REFERENCES conversation_sessions (id)
+        )
+      `);
+
+      // 病历文件表
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS medical_files (
+          id TEXT PRIMARY KEY,
+          patient_id TEXT NOT NULL,
+          file_name TEXT NOT NULL,
+          file_type TEXT NOT NULL,
+          file_size INTEGER,
+          file_url TEXT,
+          description TEXT,
+          uploaded_at TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          FOREIGN KEY (patient_id) REFERENCES patients (id)
+        )
+      `);
+
       // 插入测试数据
       this.insertTestData();
 
@@ -310,15 +353,119 @@ export class LocalDatabaseService implements DatabaseService {
     return stmt.get(id) as HealthReport;
   }
 
-  async getHealthReports(patientId: string): Promise<HealthReport[]> {
-    const stmt = this.db.prepare('SELECT * FROM health_reports WHERE patient_id = ? ORDER BY created_at DESC');
-    return stmt.all(patientId) as HealthReport[];
+  // 评估数据相关方法
+  async createAssessment(assessment: {
+    session_id: string;
+    assessment_type: string;
+    assessment_data: any;
+    submitted_by?: string;
+  }): Promise<any> {
+    const id = `assessment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const now = new Date().toISOString();
+    
+    const insertStmt = this.db.prepare(`
+      INSERT INTO assessments (id, session_id, assessment_type, assessment_data, submitted_by, submitted_at, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    insertStmt.run(
+      id,
+      assessment.session_id,
+      assessment.assessment_type,
+      JSON.stringify(assessment.assessment_data),
+      assessment.submitted_by || null,
+      now,
+      now,
+      now
+    );
+    
+    const stmt = this.db.prepare('SELECT * FROM assessments WHERE id = ?');
+    return stmt.get(id);
   }
 
-  async getHealthReport(reportId: string): Promise<HealthReport | null> {
-    const stmt = this.db.prepare('SELECT * FROM health_reports WHERE id = ?');
-    const result = stmt.get(reportId) as HealthReport | undefined;
-    return result || null;
+  async getAssessmentsBySession(sessionId: string): Promise<any[]> {
+    const stmt = this.db.prepare('SELECT * FROM assessments WHERE session_id = ? ORDER BY created_at ASC');
+    return stmt.all(sessionId);
+  }
+
+  async getAssessmentById(assessmentId: string): Promise<any | null> {
+    const stmt = this.db.prepare('SELECT * FROM assessments WHERE id = ?');
+    return stmt.get(assessmentId) || null;
+  }
+
+  // 评估分析相关方法
+  async createAssessmentAnalysis(analysis: {
+    session_id: string;
+    analysis_data: any;
+    analysis_type: string;
+  }): Promise<any> {
+    const id = `analysis-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const now = new Date().toISOString();
+    
+    const insertStmt = this.db.prepare(`
+      INSERT INTO assessment_analyses (id, session_id, analysis_data, analysis_type, created_at)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    
+    insertStmt.run(
+      id,
+      analysis.session_id,
+      JSON.stringify(analysis.analysis_data),
+      analysis.analysis_type,
+      now
+    );
+    
+    const stmt = this.db.prepare('SELECT * FROM assessment_analyses WHERE id = ?');
+    return stmt.get(id);
+  }
+
+  async getAssessmentAnalysesBySession(sessionId: string): Promise<any[]> {
+    const stmt = this.db.prepare('SELECT * FROM assessment_analyses WHERE session_id = ? ORDER BY created_at ASC');
+    return stmt.all(sessionId);
+  }
+
+  // 病历文件相关方法
+  async createMedicalFile(file: {
+    patient_id: string;
+    file_name: string;
+    file_type: string;
+    file_size: number;
+    file_url?: string;
+    description?: string;
+  }): Promise<any> {
+    const id = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const now = new Date().toISOString();
+    
+    const insertStmt = this.db.prepare(`
+      INSERT INTO medical_files (id, patient_id, file_name, file_type, file_size, file_url, description, uploaded_at, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    
+    insertStmt.run(
+      id,
+      file.patient_id,
+      file.file_name,
+      file.file_type,
+      file.file_size,
+      file.file_url || null,
+      file.description || null,
+      now,
+      now
+    );
+    
+    const stmt = this.db.prepare('SELECT * FROM medical_files WHERE id = ?');
+    return stmt.get(id);
+  }
+
+  async getMedicalFilesByPatient(patientId: string): Promise<any[]> {
+    const stmt = this.db.prepare('SELECT * FROM medical_files WHERE patient_id = ? ORDER BY created_at DESC');
+    return stmt.all(patientId);
+  }
+
+  async deleteMedicalFile(fileId: string): Promise<boolean> {
+    const stmt = this.db.prepare('DELETE FROM medical_files WHERE id = ?');
+    const result = stmt.run(fileId);
+    return result.changes > 0;
   }
 
   // 统计方法

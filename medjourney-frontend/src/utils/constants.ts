@@ -32,6 +32,7 @@ export const ROUTES = {
   FAMILY_SUMMARY: '/family-summary',
   DOCTOR: '/doctor',
   DOCTOR_REPORT: '/doctor/report',
+  TEST_HISTORY_ASSISTANT: '/test-history-assistant',
 } as const;
 
 // 消息类型

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  conversation-storage:
+    build: .
+    container_name: medjourney-conversation-storage
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - medjourney-network
+
+networks:
+  medjourney-network:
+    driver: bridge 

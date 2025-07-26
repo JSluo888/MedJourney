@@ -9,7 +9,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: { username: string; password: string }) => Promise<void>;
+  login: (credentials: { email: string; password: string; role: string }) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: Partial<User>) => void;
 }
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   // 登录函数
-  const login = async (credentials: { username: string; password: string }) => {
+  const login = async (credentials: { email: string; password: string; role: string }) => {
     try {
       setIsLoading(true);
       const response = await ApiService.login(credentials);

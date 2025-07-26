@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # 前端服务
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+
+  # 后端服务
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    volumes:
+      - ./medjourney-backend/.env:/app/.env:ro
+
+  # 全栈服务（使用nginx反向代理）
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./medjourney-backend/.env:/app/backend/.env:ro
+
+  # 开发环境
+  dev-frontend:
+    build:
+      context: ./medjourney-frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./medjourney-frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3001
+
+  dev-backend:
+    build:
+      context: ./medjourney-backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./medjourney-backend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development 

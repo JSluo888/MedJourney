@@ -16,6 +16,7 @@ import {
 import { useAppStore } from '../stores/useAppStore';
 import { BasicAssessment } from '../types';
 import { ROUTES } from '../constants';
+import { assessmentService } from '../services/assessment-service';
 
 const AssessmentBasicPage: React.FC = () => {
   const navigate = useNavigate();
@@ -103,13 +104,29 @@ const AssessmentBasicPage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
-      // 这里应该保存数据到状态管理或后端
-      console.log('基础评估数据:', formData);
-      
-      // 导航到下一个阶段
-      navigate(ROUTES.ASSESSMENT_CASE);
+      try {
+        // 创建或恢复评估会话
+        let session = assessmentService.getCurrentSession();
+        if (!session) {
+          session = await assessmentService.createAssessmentSession(user?.id || 'default-patient');
+        }
+
+        // 提交基础评估数据
+        await assessmentService.submitBasicAssessment(formData);
+        
+        // 保存会话到本地存储
+        assessmentService.saveSessionToStorage();
+        
+        console.log('基础评估数据已保存:', formData);
+        
+        // 导航到下一个阶段
+        navigate(ROUTES.ASSESSMENT_CASE);
+      } catch (error) {
+        console.error('保存基础评估数据失败:', error);
+        // 这里可以添加错误提示UI
+      }
     }
   };
 

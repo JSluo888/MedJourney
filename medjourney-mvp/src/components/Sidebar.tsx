@@ -23,7 +23,7 @@ const Sidebar: React.FC = () => {
       color: 'text-blue-600'
     },
     {
-      name: '病史导入',
+      name: '病史助手',
       href: ROUTES.HISTORY,
       icon: History,
       color: 'text-green-600'

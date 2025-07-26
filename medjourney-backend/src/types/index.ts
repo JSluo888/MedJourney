@@ -235,6 +235,9 @@ export interface Config {
     temperature: number;
     pinecone_api_key: string;
     pinecone_index: string;
+    stepfun_api_key: string;
+    stepfun_base_url: string;
+    stepfun_model: string;
   };
   storage: {
     max_file_size: number;

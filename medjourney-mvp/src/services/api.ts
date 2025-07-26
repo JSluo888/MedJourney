@@ -452,6 +452,97 @@ AI分析结果：
       `;
       
       return new Blob([content], { type: 'text/plain' });
+    },
+
+    // 更新家属简报
+    updateFamilyReport: async (reportData: {
+      summary: string;
+      highlights: string[];
+      suggestions: string[];
+      nextSteps: string[];
+      healthScore: number;
+      emotionalState: string;
+    }): Promise<any> => {
+      await delay(1000);
+      
+      // 模拟更新成功
+      return {
+        success: true,
+        data: {
+          id: 'family-report-' + Date.now(),
+          updatedAt: new Date().toISOString(),
+          ...reportData
+        }
+      };
+    },
+
+    // 更新医生仪表盘
+    updateDoctorDashboard: async (dashboardData: {
+      patientId: string;
+      sessionData: any;
+      analysis: {
+        emotionalState: string;
+        cognitivePerformance: number;
+        keyTopics: string[];
+        concerns: string[];
+        insights: string[];
+      };
+      recommendations: string[];
+    }): Promise<any> => {
+      await delay(1000);
+      
+      // 模拟更新成功
+      return {
+        success: true,
+        data: {
+          id: 'dashboard-update-' + Date.now(),
+          updatedAt: new Date().toISOString(),
+          ...dashboardData
+        }
+      };
+    },
+
+    // 获取实时更新的家属简报
+    getRealTimeFamilyReport: async (): Promise<any> => {
+      await delay(500);
+      
+      return {
+        success: true,
+        data: {
+          lastUpdated: new Date().toISOString(),
+          summary: '患者今日表现良好，情绪稳定，沟通顺畅。',
+          healthScore: 85,
+          emotionalState: 'positive',
+          highlights: ['对话积极活跃', '语言表达清晰', '情绪状态稳定'],
+          suggestions: ['多陪伴交流，保持患者情绪稳定', '鼓励参与社交活动'],
+          nextSteps: ['继续观察患者日常表现', '保持现有护理方案']
+        }
+      };
+    },
+
+    // 获取实时更新的医生仪表盘
+    getRealTimeDoctorDashboard: async (): Promise<any> => {
+      await delay(500);
+      
+      return {
+        success: true,
+        data: {
+          lastUpdated: new Date().toISOString(),
+          totalPatients: 156,
+          todaySessions: 23,
+          highRiskPatients: 12,
+          averageHealthScore: 72,
+          recentSessions: [
+            {
+              id: 'session-1',
+              patientName: '李奶奶',
+              sessionDate: new Date().toISOString(),
+              healthScore: 82,
+              riskLevel: 'low'
+            }
+          ]
+        }
+      };
     }
   }
 };

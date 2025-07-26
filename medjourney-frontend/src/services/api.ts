@@ -93,15 +93,22 @@ class MockDatabase {
   // 消息API
   async getMessages(userId: string): Promise<Message[]> {
     await delay(100);
-    return this.messages.get(userId) || [];
+    const messages = this.messages.get(userId) || [];
+    console.log(`获取用户 ${userId} 的消息:`, messages.length, '条');
+    return messages;
   }
 
   async addMessage(userId: string, message: Message): Promise<Message> {
     await delay(150);
     const userMessages = this.messages.get(userId) || [];
-    userMessages.push(message);
+    const newMessage = {
+      ...message,
+      id: message.id || `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
+    userMessages.push(newMessage);
     this.messages.set(userId, userMessages);
-    return message;
+    console.log(`为用户 ${userId} 添加消息:`, newMessage.content.substring(0, 50));
+    return newMessage;
   }
 
   async clearMessages(userId: string): Promise<void> {
@@ -377,81 +384,159 @@ export const api = {
   // 报告API
   reports: {
     // 生成家属简报
-    generateFamilyReport: async (userId: string): Promise<Blob> => {
-      await delay(2000);
-      
-      // 模拟PDF生成
-      const content = `
-MedJourney 家属简报
-==================
+    generateFamilyReport: async (userId: string, format: 'pdf' | 'json' = 'pdf'): Promise<Blob | any> => {
+      try {
+        const response = await fetch('/api/v1/reports/family-summary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          },
+          body: JSON.stringify({ 
+            userId,
+            format,
+            includeCharts: true
+          })
+        });
 
-患者姓名：王奶奶
-生成日期：${new Date().toLocaleDateString('zh-CN')}
+        if (!response.ok) {
+          throw new Error(`API调用失败: ${response.status}`);
+        }
 
-健康状态概要：
-- 综合评分：85/100
-- 认知能力：78/100  
-- 情绪状态：92/100
-- 社交能力：88/100
-
-本周活动总结：
-- AI对话次数：24次
-- 平均会话时长：15分钟
-- 情绪状态：积极
-
-关键观察：
-1. 患者对话积极性良好
-2. 记忆力相对稳定
-3. 情绪状态正面
-
-建议：
-- 继续保持规律对话
-- 增加户外活动
-- 定期家庭聚会
-      `;
-      
-      return new Blob([content], { type: 'text/plain' });
+        if (format === 'json') {
+          return response.json();
+        } else {
+          return response.blob();
+        }
+      } catch (error) {
+        console.error('生成家属简报失败:', error);
+        throw new Error('生成家属简报失败');
+      }
     },
     
     // 生成医生报告
-    generateDoctorReport: async (sessionId: string): Promise<Blob> => {
-      await delay(3000);
-      
-      const content = `
-MedJourney 医生诊断报告
-======================
+    generateDoctorReport: async (sessionId: string, format: 'pdf' | 'json' = 'pdf'): Promise<Blob | any> => {
+      try {
+        const response = await fetch(`/api/v1/reports/${sessionId}/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          },
+          body: JSON.stringify({ 
+            format,
+            includeCharts: true,
+            includeRecommendations: true
+          })
+        });
 
-会话ID：${sessionId}
-生成日期：${new Date().toLocaleDateString('zh-CN')}
+        if (!response.ok) {
+          throw new Error(`API调用失败: ${response.status}`);
+        }
 
-患者基本信息：
-- 姓名：王奶奶
-- 年龄：72岁
-- 诊断：阿尔茨海默病早期
+        if (format === 'json') {
+          return response.json();
+        } else {
+          return response.blob();
+        }
+      } catch (error) {
+        console.error('生成医生报告失败:', error);
+        throw new Error('生成医生报告失败');
+      }
+    },
 
-会话分析：
-- 持续时间：45分钟
-- 对话轮次：32次
-- 平均响应时间：3.2秒
+    // 获取报告列表
+    getReportsList: async (patientId: string, options?: {
+      limit?: number;
+      offset?: number;
+      reportType?: string;
+    }): Promise<any> => {
+      try {
+        const params = new URLSearchParams();
+        if (options?.limit) params.append('limit', options.limit.toString());
+        if (options?.offset) params.append('offset', options.offset.toString());
+        if (options?.reportType) params.append('reportType', options.reportType);
 
-认知评估：
-- 记忆力：78/100
-- 注意力：82/100
-- 语言能力：85/100
-- 定向力：90/100
+        const response = await fetch(`/api/v1/reports/list/${patientId}?${params}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
 
-AI分析结果：
-1. 患者语言表达清晰
-2. 情绪状态稳定
-3. 对话连贯性良好
+        if (!response.ok) {
+          throw new Error(`API调用失败: ${response.status}`);
+        }
 
-医学建议：
-- 继续药物治疗
-- 增加认知训练
-- 定期复诊
-      `;
-      
-      return new Blob([content], { type: 'text/plain' });
+        return response.json();
+      } catch (error) {
+        console.error('获取报告列表失败:', error);
+        throw new Error('获取报告列表失败');
+      }
+    },
+
+    // 获取特定报告
+    getReport: async (reportId: string, format: 'json' | 'html' = 'json'): Promise<any> => {
+      try {
+        const response = await fetch(`/api/v1/reports/${reportId}?format=${format}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`API调用失败: ${response.status}`);
+        }
+
+        if (format === 'html') {
+          return response.text();
+        }
+        return response.json();
+      } catch (error) {
+        console.error('获取报告失败:', error);
+        throw new Error('获取报告失败');
+      }
+    },
+
+    // 下载报告
+    downloadReport: async (reportId: string): Promise<Blob> => {
+      try {
+        const response = await fetch(`/api/v1/reports/${reportId}/download`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`API调用失败: ${response.status}`);
+        }
+
+        return response.blob();
+      } catch (error) {
+        console.error('下载报告失败:', error);
+        throw new Error('下载报告失败');
+      }
+    },
+
+    // 删除报告
+    deleteReport: async (reportId: string): Promise<void> => {
+      try {
+        const response = await fetch(`/api/v1/reports/${reportId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`API调用失败: ${response.status}`);
+        }
+      } catch (error) {
+        console.error('删除报告失败:', error);
+        throw new Error('删除报告失败');
+      }
     }
   }
 };

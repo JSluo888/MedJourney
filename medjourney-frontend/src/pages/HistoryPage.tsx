@@ -1,16 +1,20 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { 
-  Upload, 
-  FileText, 
+  Send, 
   Image as ImageIcon, 
+  FileText, 
   X, 
-  Save, 
+  Download,
+  MessageCircle,
+  Brain,
+  Users,
+  Stethoscope,
   Plus,
-  Calendar,
-  User,
-  AlertCircle
+  Paperclip,
+  Loader2
 } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
+import minimaxService, { ChatMessage } from '../services/minimax';
 
 interface UploadedFile {
   id: string;
@@ -21,12 +25,46 @@ interface UploadedFile {
 
 const HistoryPage: React.FC = () => {
   const { user, setIsLoading, isLoading } = useAppStore();
-  const [medicalHistory, setMedicalHistory] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [inputText, setInputText] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [dragActive, setDragActive] = useState(false);
-  
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [showActions, setShowActions] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 自动滚动到底部
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // 初始化欢迎消息
+  useEffect(() => {
+    const welcomeMessage: ChatMessage = {
+      id: 'welcome',
+      role: 'assistant',
+      content: `您好！我是您的医疗AI助手，专门帮助您整理和分析病史信息。
+
+我可以帮您：
+• 📝 整理病史信息，包括症状、诊断、用药等
+• 🖼️ 分析上传的医疗文档和图片
+• 📊 生成结构化的病史摘要
+• 👨‍👩‍👧‍👦 为家属简报提供专业建议
+• 👨‍⚕️ 为医生仪表板生成详细报告
+
+请告诉我您的病史信息，或者上传相关的医疗文档和图片。`,
+      timestamp: new Date()
+    };
+    setMessages([welcomeMessage]);
+  }, []);
+
   // 处理文件上传
-  const handleFiles = useCallback((files: FileList) => {
+  const handleFileUpload = useCallback((files: FileList) => {
     const validFiles = Array.from(files).filter(file => {
       const isImage = file.type.startsWith('image/');
       const isDocument = file.type === 'application/pdf' || file.type.includes('document');
@@ -52,240 +90,398 @@ const HistoryPage: React.FC = () => {
       }
     });
   }, []);
-  
-  // 拖放事件处理
-  const handleDrag = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
-  }, []);
-  
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFiles(e.dataTransfer.files);
-    }
-  }, [handleFiles]);
-  
+
   // 文件选择
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      handleFiles(e.target.files);
+      handleFileUpload(e.target.files);
     }
   };
-  
+
   // 删除文件
   const removeFile = (id: string) => {
     setUploadedFiles(prev => prev.filter(file => file.id !== id));
   };
-  
-  // 保存病史
-  const handleSave = async () => {
-    if (!medicalHistory.trim() && uploadedFiles.length === 0) {
-      alert('请输入病史信息或上传相关文件');
+
+  // 发送消息
+  const sendMessage = async () => {
+    if ((!inputText.trim() && uploadedFiles.length === 0) || isGenerating) {
       return;
     }
-    
-    setIsLoading(true);
-    
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: inputText.trim(),
+      timestamp: new Date(),
+      attachments: uploadedFiles.map(file => ({
+        type: file.type,
+        url: file.preview || '',
+        name: file.file.name
+      }))
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+    setSelectedFiles(uploadedFiles.map(f => f.file));
+    setUploadedFiles([]);
+    setIsGenerating(true);
+
     try {
-      // 模拟保存操作
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // 这里可以加入实际的保存逻辑
-      console.log('保存病史:', { medicalHistory, files: uploadedFiles });
-      
-      alert('病史信息保存成功！');
-      
-      // 清空表单
-      setMedicalHistory('');
-      setUploadedFiles([]);
+      const response = await minimaxService.sendMultimodalMessage(
+        inputText.trim(),
+        selectedFiles,
+        messages
+      );
+
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: response,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      alert('保存失败，请重试');
+      console.error('发送消息失败:', error);
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: '抱歉，我暂时无法处理您的请求。请稍后重试。',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsGenerating(false);
+      setSelectedFiles([]);
+    }
+  };
+
+  // 生成病史摘要
+  const generateSummary = async () => {
+    if (messages.length <= 1) {
+      alert('请先进行一些对话后再生成摘要');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const summary = await minimaxService.generateHistorySummary(messages);
+      
+      const summaryMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `## 📋 病史摘要
+
+**主要摘要：**
+${summary.summary}
+
+**关键要点：**
+${summary.keyPoints.map(point => `• ${point}`).join('\n')}
+
+**专业建议：**
+${summary.recommendations.map(rec => `• ${rec}`).join('\n')}`,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, summaryMessage]);
+    } catch (error) {
+      console.error('生成摘要失败:', error);
+      alert('生成摘要失败，请重试');
     } finally {
       setIsLoading(false);
     }
   };
-  
+
+  // 生成家属简报
+  const generateFamilyReport = async () => {
+    if (messages.length <= 1) {
+      alert('请先进行一些对话后再生成简报');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const report = await minimaxService.generateFamilyReport(messages);
+      
+      const reportMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `## 👨‍👩‍👧‍👦 家属简报
+
+${report}`,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, reportMessage]);
+    } catch (error) {
+      console.error('生成家属简报失败:', error);
+      alert('生成家属简报失败，请重试');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 生成医生报告
+  const generateDoctorReport = async () => {
+    if (messages.length <= 1) {
+      alert('请先进行一些对话后再生成报告');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const report = await minimaxService.generateDoctorReport(messages);
+      
+      const reportMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `## 👨‍⚕️ 医生报告
+
+${report}`,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, reportMessage]);
+    } catch (error) {
+      console.error('生成医生报告失败:', error);
+      alert('生成医生报告失败，请重试');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // 清空对话
+  const clearChat = () => {
+    if (confirm('确定要清空所有对话吗？')) {
+      setMessages([]);
+      setUploadedFiles([]);
+      setSelectedFiles([]);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      {/* 页面标题 */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">病史导入</h1>
-          <p className="text-gray-600 mt-2">请上传您的医疗记录和相关文件，帮助 AI 更好地了解您的健康状况。</p>
-        </div>
-        <div className="flex items-center space-x-2 text-gray-500">
-          <Calendar className="w-5 h-5" />
-          <span>{new Date().toLocaleDateString('zh-CN')}</span>
-        </div>
-      </div>
-      
-      {/* 用户信息卡片 */}
-      <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-        <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
-            {user?.name?.charAt(0) || 'U'}
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">{user?.name}</h2>
-            <p className="text-gray-600">ID: {user?.id}</p>
-            {user?.age && <p className="text-gray-600">年龄: {user.age} 岁</p>}
-          </div>
-        </div>
-      </div>
-      
-      {/* 病史信息输入 */}
-      <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-          <FileText className="w-6 h-6 mr-2 text-blue-500" />
-          病史信息
-        </h2>
-        
-        <div className="space-y-4">
-          <div>
-            <label htmlFor="medical-history" className="block text-sm font-medium text-gray-700 mb-2">
-              请详细描述您的病史、症状和目前的治疗情况：
-            </label>
-            <textarea
-              id="medical-history"
-              value={medicalHistory}
-              onChange={(e) => setMedicalHistory(e.target.value)}
-              className="w-full h-40 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-lg"
-              placeholder="例如：
-• 诊断时间和医院
-• 目前的症状表现
-• 正在服用的药物
-• 既往病史和家族病史
-• 生活习惯和日常护理情况"
-            />
+    <div className="max-w-6xl mx-auto h-screen flex flex-col">
+      {/* 页面头部 */}
+      <div className="bg-white border-b border-gray-200 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <MessageCircle className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">病史导入助手</h1>
+              <p className="text-sm text-gray-600">AI驱动的多模态病史整理工具</p>
+            </div>
           </div>
           
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <AlertCircle className="w-4 h-4" />
-            <span>支持 Markdown 格式，您可以使用 **粗体** 和 *斜体* 等格式化文本。</span>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowActions(!showActions)}
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
           </div>
         </div>
+
+        {/* 快捷操作按钮 */}
+        {showActions && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              onClick={generateSummary}
+              disabled={isLoading || messages.length <= 1}
+              className="flex items-center space-x-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Brain className="w-4 h-4" />
+              <span>生成摘要</span>
+            </button>
+            
+            <button
+              onClick={generateFamilyReport}
+              disabled={isLoading || messages.length <= 1}
+              className="flex items-center space-x-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Users className="w-4 h-4" />
+              <span>家属简报</span>
+            </button>
+            
+            <button
+              onClick={generateDoctorReport}
+              disabled={isLoading || messages.length <= 1}
+              className="flex items-center space-x-2 px-3 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <Stethoscope className="w-4 h-4" />
+              <span>医生报告</span>
+            </button>
+            
+            <button
+              onClick={clearChat}
+              className="flex items-center space-x-2 px-3 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
+            >
+              <X className="w-4 h-4" />
+              <span>清空对话</span>
+            </button>
+          </div>
+        )}
       </div>
-      
+
+      {/* 消息列表 */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-3xl rounded-lg p-4 ${
+                message.role === 'user'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white border border-gray-200'
+              }`}
+            >
+              {/* 消息内容 */}
+              <div className="prose prose-sm max-w-none">
+                {message.content.includes('##') ? (
+                  <div dangerouslySetInnerHTML={{ 
+                    __html: message.content
+                      .replace(/\n/g, '<br>')
+                      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                  }} />
+                ) : (
+                  <p className="whitespace-pre-wrap">{message.content}</p>
+                )}
+              </div>
+
+              {/* 附件 */}
+              {message.attachments && message.attachments.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {message.attachments.map((attachment, index) => (
+                    <div key={index} className="flex items-center space-x-2 text-sm">
+                      {attachment.type === 'image' ? (
+                        <ImageIcon className="w-4 h-4" />
+                      ) : (
+                        <FileText className="w-4 h-4" />
+                      )}
+                      <span>{attachment.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* 时间戳 */}
+              <div className={`text-xs mt-2 ${
+                message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+              }`}>
+                {message.timestamp.toLocaleTimeString('zh-CN', {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* 生成中状态 */}
+        {isGenerating && (
+          <div className="flex justify-start">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center space-x-2">
+                <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                <span className="text-gray-600">AI正在思考中...</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
+      </div>
+
       {/* 文件上传区域 */}
-      <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-          <Upload className="w-6 h-6 mr-2 text-green-500" />
-          文件上传
-        </h2>
-        
-        {/* 拖放上传区域 */}
-        <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
-            dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-          }`}
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-        >
-          <Upload className={`w-12 h-12 mx-auto mb-4 ${
-            dragActive ? 'text-blue-500' : 'text-gray-400'
-          }`} />
-          <p className="text-lg font-medium text-gray-900 mb-2">
-            拖放文件到此处，或点击上传
-          </p>
-          <p className="text-gray-500 mb-4">
-            支持 JPG、PNG、PDF 等格式，单个文件不超过 10MB
-          </p>
-          <label htmlFor="file-upload" className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition-colors">
-            <Plus className="w-5 h-5 mr-2" />
-            选择文件
-          </label>
+      {uploadedFiles.length > 0 && (
+        <div className="bg-white border-t border-gray-200 p-4">
+          <div className="flex flex-wrap gap-2">
+            {uploadedFiles.map((file) => (
+              <div
+                key={file.id}
+                className="flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-2"
+              >
+                {file.type === 'image' ? (
+                  <ImageIcon className="w-4 h-4 text-blue-500" />
+                ) : (
+                  <FileText className="w-4 h-4 text-green-500" />
+                )}
+                <span className="text-sm text-gray-700">{file.file.name}</span>
+                <button
+                  onClick={() => removeFile(file.id)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 输入区域 */}
+      <div className="bg-white border-t border-gray-200 p-4">
+        <div className="flex items-end space-x-3">
+          {/* 文件上传按钮 */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            title="上传文件"
+          >
+            <Paperclip className="w-5 h-5" />
+          </button>
+          
           <input
-            id="file-upload"
+            ref={fileInputRef}
             type="file"
             multiple
             accept="image/*,.pdf,.doc,.docx"
             onChange={handleFileSelect}
             className="hidden"
           />
-        </div>
-        
-        {/* 已上传文件列表 */}
-        {uploadedFiles.length > 0 && (
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">已上传的文件 ({uploadedFiles.length})</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {uploadedFiles.map((file) => (
-                <div key={file.id} className="relative bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <button
-                    onClick={() => removeFile(file.id)}
-                    className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                  
-                  {file.type === 'image' && file.preview ? (
-                    <img
-                      src={file.preview}
-                      alt={file.file.name}
-                      className="w-full h-24 object-cover rounded-md mb-2"
-                    />
-                  ) : (
-                    <div className="w-full h-24 bg-gray-200 rounded-md mb-2 flex items-center justify-center">
-                      <FileText className="w-8 h-8 text-gray-400" />
-                    </div>
-                  )}
-                  
-                  <div className="flex items-start space-x-2">
-                    {file.type === 'image' ? (
-                      <ImageIcon className="w-4 h-4 text-green-500 mt-1 flex-shrink-0" />
-                    ) : (
-                      <FileText className="w-4 h-4 text-blue-500 mt-1 flex-shrink-0" />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate" title={file.file.name}>
-                        {file.file.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {(file.file.size / 1024 / 1024).toFixed(2)} MB
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+
+          {/* 文本输入框 */}
+          <div className="flex-1">
+            <textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+              placeholder="请输入您的病史信息，或描述上传的文档..."
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              rows={1}
+              style={{ minHeight: '44px', maxHeight: '120px' }}
+            />
           </div>
-        )}
-      </div>
-      
-      {/* 保存按钮 */}
-      <div className="flex justify-end space-x-4">
-        <button
-          onClick={() => {
-            setMedicalHistory('');
-            setUploadedFiles([]);
-          }}
-          className="px-6 py-3 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-        >
-          清空
-        </button>
-        <button
-          onClick={handleSave}
-          disabled={isLoading}
-          className="px-8 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center"
-        >
-          {isLoading ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-          ) : (
-            <Save className="w-5 h-5 mr-2" />
-          )}
-          {isLoading ? '保存中...' : '保存病史'}
-        </button>
+
+          {/* 发送按钮 */}
+          <button
+            onClick={sendMessage}
+            disabled={(!inputText.trim() && uploadedFiles.length === 0) || isGenerating}
+            className="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isGenerating ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Send className="w-5 h-5" />
+            )}
+          </button>
+        </div>
+
+        {/* 提示信息 */}
+        <div className="mt-2 text-xs text-gray-500">
+          支持文本输入和图片/文档上传，按 Enter 发送消息，Shift + Enter 换行
+        </div>
       </div>
     </div>
   );

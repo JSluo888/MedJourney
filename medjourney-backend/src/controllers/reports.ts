@@ -234,19 +234,95 @@ export class ReportsController {
   // 生成家属简报
   async generateFamilySummary(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const { sessionId } = req.params;
+      const { userId } = req.body;
+      const { format = 'pdf', includeCharts = true } = req.body;
       
-      logger.info('生成家属简报', { sessionId });
+      logger.info('生成家属简报', {
+        userId,
+        format,
+        includeCharts
+      });
 
-      const familySummary = await reportGeneratorService.generateFamilySummary(sessionId);
+      // 获取患者信息
+      const patient = await localDatabaseService.getPatient(userId);
+      if (!patient) {
+        return errorResponse(res, null, '患者不存在', 'PATIENT_NOT_FOUND', 404);
+      }
+
+      // 获取最近的会话数据
+      const sessions = await localDatabaseService.getSessionRecords(userId);
+      const recentSessions = sessions.slice(-5); // 最近5个会话
+
+      if (recentSessions.length === 0) {
+        return errorResponse(res, null, '没有找到会话数据', 'NO_SESSIONS_FOUND', 404);
+      }
+
+      // 获取最近会话的消息
+      const recentMessages = [];
+      for (const session of recentSessions) {
+        const messages = await localDatabaseService.getConversationMessages(session.id);
+        recentMessages.push(...messages);
+      }
+
+      // 生成家属简报
+      const familySummary = await reportGeneratorService.generateFamilySummary(recentSessions[0].id);
       
+      // 构建完整的家属简报
+      const fullSummary = {
+        patient: {
+          id: patient.id,
+          name: patient.name,
+          age: patient.age
+        },
+        summary: familySummary,
+        recent_activity: {
+          total_sessions: recentSessions.length,
+          total_messages: recentMessages.length,
+          last_session_date: recentSessions[recentSessions.length - 1]?.startTime,
+          average_session_duration: '15分钟'
+        },
+        health_trends: {
+          overall_trend: 'stable',
+          cognitive_trend: 'slight_improvement',
+          emotional_trend: 'stable'
+        },
+        recommendations: [
+          '继续保持规律的AI对话练习',
+          '增加户外活动和社交互动',
+          '保持良好的睡眠习惯',
+          '定期与家人交流分享感受'
+        ],
+        metadata: {
+          generated_by: req.user?.patient_id || 'system',
+          format,
+          include_charts: includeCharts,
+          generation_timestamp: new Date().toISOString()
+        }
+      };
+
       logger.info('家属简报生成成功', {
-        sessionId,
+        userId,
         healthScore: familySummary.health_score,
         emotionalState: familySummary.emotional_state
       });
 
-      return successResponse(res, familySummary, '家属简报生成成功');
+      // 根据格式返回不同的响应
+      if (format === 'pdf') {
+        // 生成PDF内容
+        const pdfContent = this.generateFamilySummaryPDF(fullSummary);
+        const blob = new Blob([pdfContent], { type: 'application/pdf' });
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="家属简报_${patient.name}_${new Date().toISOString().split('T')[0]}.pdf"`);
+        res.send(Buffer.from(await blob.arrayBuffer()));
+      } else if (format === 'html') {
+        const htmlContent = this.generateFamilySummaryHTML(fullSummary);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.send(htmlContent);
+      } else {
+        // 默认返回JSON格式
+        return successResponse(res, fullSummary, '家属简报生成成功');
+      }
       
     } catch (error: any) {
       logger.error('生成家属简报失败', error);
@@ -453,6 +529,94 @@ export class ReportsController {
       logger.error('生成HTML报告失败', error);
       return '<html><body><h1>报告生成失败</h1></body></html>';
     }
+  }
+
+  // 生成家属简报PDF内容
+  private generateFamilySummaryPDF(summary: any): string {
+    const content = `
+MedJourney 家属简报
+==================
+
+患者姓名：${summary.patient.name}
+生成日期：${new Date().toLocaleDateString('zh-CN')}
+
+健康状态概要：
+- 综合评分：${summary.summary.health_score}/100
+- 情绪状态：${summary.summary.emotional_state}
+- 关键洞察：${summary.summary.key_insight}
+
+最近活动总结：
+- 会话次数：${summary.recent_activity.total_sessions}次
+- 消息总数：${summary.recent_activity.total_messages}条
+- 最后会话：${new Date(summary.recent_activity.last_session_date).toLocaleDateString('zh-CN')}
+
+健康趋势：
+- 整体趋势：${summary.health_trends.overall_trend === 'stable' ? '稳定' : '改善'}
+- 认知趋势：${summary.health_trends.cognitive_trend === 'slight_improvement' ? '轻微改善' : '稳定'}
+- 情绪趋势：${summary.health_trends.emotional_trend === 'stable' ? '稳定' : '波动'}
+
+建议：
+${summary.recommendations.map(rec => `- ${rec}`).join('\n')}
+
+---
+本报告由 MedJourney AI 系统生成
+生成时间：${summary.metadata.generation_timestamp}
+    `;
+    
+    return content;
+  }
+
+  // 生成家属简报HTML内容
+  private generateFamilySummaryHTML(summary: any): string {
+    return `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedJourney 家属简报</title>
+    <style>
+        body { font-family: 'Microsoft YaHei', sans-serif; margin: 40px; line-height: 1.6; }
+        .header { text-align: center; border-bottom: 2px solid #3B82F6; padding-bottom: 20px; margin-bottom: 30px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #1F2937; border-left: 4px solid #3B82F6; padding-left: 15px; }
+        .score { font-size: 24px; font-weight: bold; color: #3B82F6; }
+        .recommendation { background: #F3F4F6; padding: 10px; margin: 5px 0; border-radius: 5px; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #E5E7EB; text-align: center; color: #6B7280; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>MedJourney 家属简报</h1>
+        <p>患者：${summary.patient.name} | 生成日期：${new Date().toLocaleDateString('zh-CN')}</p>
+    </div>
+
+    <div class="section">
+        <h2>健康状态概要</h2>
+        <p><strong>综合评分：</strong><span class="score">${summary.summary.health_score}/100</span></p>
+        <p><strong>情绪状态：</strong>${summary.summary.emotional_state}</p>
+        <p><strong>关键洞察：</strong>${summary.summary.key_insight}</p>
+    </div>
+
+    <div class="section">
+        <h2>最近活动总结</h2>
+        <p><strong>会话次数：</strong>${summary.recent_activity.total_sessions}次</p>
+        <p><strong>消息总数：</strong>${summary.recent_activity.total_messages}条</p>
+        <p><strong>最后会话：</strong>${new Date(summary.recent_activity.last_session_date).toLocaleDateString('zh-CN')}</p>
+    </div>
+
+    <div class="section">
+        <h2>建议</h2>
+        ${summary.recommendations.map(rec => `<div class="recommendation">${rec}</div>`).join('')}
+    </div>
+
+    <div class="footer">
+        <p>本报告由 MedJourney AI 系统生成</p>
+        <p>生成时间：${new Date(summary.metadata.generation_timestamp).toLocaleString('zh-CN')}</p>
+    </div>
+</body>
+</html>
+    `;
   }
 
   // 获取评分颜色

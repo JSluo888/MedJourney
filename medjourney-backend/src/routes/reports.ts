@@ -34,6 +34,18 @@ router.post('/:sessionId/generate',
   reportsController.generateReport.bind(reportsController)
 );
 
+// 生成家属简报
+router.post('/family-summary',
+  authenticateToken,
+  [
+    body('userId').isString().notEmpty().withMessage('用户ID是必填项'),
+    body('format').isIn(['json', 'pdf', 'html']).optional(),
+    body('includeCharts').isBoolean().optional(),
+    handleValidationErrors
+  ],
+  reportsController.generateFamilySummary.bind(reportsController)
+);
+
 // 获取报告列表
 router.get('/list/:patientId',
   authenticateToken,

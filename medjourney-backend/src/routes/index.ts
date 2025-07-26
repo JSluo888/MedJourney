@@ -6,6 +6,7 @@ import sessionRoutes from './session';
 import familyRoutes from './family';
 import doctorRoutes from './doctor';
 import uploadRoutes from './upload';
+import reportsRoutes from './reports';
 import { healthCheck } from '../middleware';
 
 const router = Router();
@@ -22,6 +23,7 @@ router.use(`${API_VERSION}/sessions`, sessionRoutes);
 router.use(`${API_VERSION}/family`, familyRoutes);
 router.use(`${API_VERSION}/doctor`, doctorRoutes);
 router.use(`${API_VERSION}/upload`, uploadRoutes);
+router.use(`${API_VERSION}/reports`, reportsRoutes);
 
 // API根路径信息
 router.get(API_VERSION, (req, res) => {
@@ -35,6 +37,7 @@ router.get(API_VERSION, (req, res) => {
       family: `${API_VERSION}/family`,
       doctor: `${API_VERSION}/doctor`,
       upload: `${API_VERSION}/upload`,
+      reports: `${API_VERSION}/reports`,
       health: '/health'
     },
     documentation: 'https://docs.medjourney.ai',

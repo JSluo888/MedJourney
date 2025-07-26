@@ -7,7 +7,7 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { cn } from '../../lib/utils';
 
 interface LoginForm {
-  username: string;
+  email: string;
   password: string;
   role: 'patient' | 'family' | 'doctor';
 }
@@ -16,7 +16,7 @@ const LoginPage: React.FC = () => {
   const { login, isLoading } = useAuth();
   const { mockLogin } = useMockAuth();
   const [formData, setFormData] = useState<LoginForm>({
-    username: '',
+    email: '',
     password: '',
     role: 'patient'
   });
@@ -32,15 +32,16 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.username || !formData.password) {
-      setError('请填写用户名和密码');
+    if (!formData.email || !formData.password) {
+      setError('请填写邮箱和密码');
       return;
     }
     
     try {
       await login({
-        username: formData.username,
-        password: formData.password
+        email: formData.email,
+        password: formData.password,
+        role: formData.role
       });
     } catch (err: any) {
       setError(err.message || '登录失败，请检查用户名和密码');
@@ -163,22 +164,22 @@ const LoginPage: React.FC = () => {
               </select>
             </div>
             
-            {/* 用户名 */}
+            {/* 邮箱 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                用户名
+                邮箱
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleInputChange}
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="请输入用户名"
+                  placeholder="请输入邮箱"
                 />
               </div>
             </div>

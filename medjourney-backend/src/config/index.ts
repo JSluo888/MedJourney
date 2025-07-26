@@ -21,7 +21,10 @@ const defaultConfig: Partial<Config> = {
     openai_model: 'gpt-4o',
     temperature: 0.7,
     pinecone_api_key: 'mock-pinecone-key',
-    pinecone_index: 'medjourney-knowledge'
+    pinecone_index: 'medjourney-knowledge',
+    stepfun_api_key: '4kNO9CYMO1ddw4s20byLvrkYtBWXowdR1OcrY8Hi7tkapqi3gMAEAzNHCl3LKqFIy',
+    stepfun_base_url: 'https://api.stepfun.com/v1',
+    stepfun_model: 'step-1-8k'
   },
   storage: {
     bucket_name: 'medjourney-storage',
@@ -72,7 +75,10 @@ function loadConfigFromEnv(): Partial<Config> {
       openai_model: process.env.OPENAI_MODEL || defaultConfig.ai!.openai_model,
       temperature: parseFloat(process.env.OPENAI_TEMPERATURE || '0.7'),
       pinecone_api_key: process.env.PINECONE_API_KEY || defaultConfig.ai!.pinecone_api_key,
-      pinecone_index: process.env.PINECONE_INDEX || defaultConfig.ai!.pinecone_index
+      pinecone_index: process.env.PINECONE_INDEX || defaultConfig.ai!.pinecone_index,
+      stepfun_api_key: process.env.STEPFUN_API_KEY || defaultConfig.ai!.stepfun_api_key,
+      stepfun_base_url: process.env.STEPFUN_BASE_URL || defaultConfig.ai!.stepfun_base_url,
+      stepfun_model: process.env.STEPFUN_MODEL || defaultConfig.ai!.stepfun_model
     },
     storage: {
       bucket_name: process.env.STORAGE_BUCKET || defaultConfig.storage!.bucket_name,

@@ -1,194 +1,352 @@
-# MedJourney
+# MedJourney - AI驱动的阿尔茨海默病患者陪伴平台
 
-MedJourney is an AI-powered web application designed to provide real-time, multimodal companionship and cognitive support for Alzheimer's patients. The project leverages advanced AI, real-time communication, and retrieval-augmented generation (RAG) technologies to deliver natural, interactive, and supportive experiences for patients, families, and healthcare professionals.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue.svg)](https://www.typescriptlang.org/)
 
-## 🚀 Live Demo
+## 📖 项目概述
 
-**Deployed Application:** https://06jy00o1s5lb.space.minimax.io
+MedJourney 是一个专为阿尔茨海默病患者设计的AI驱动陪伴平台，集成了先进的AI技术、实时通信和医疗知识检索功能。平台通过多模态交互、智能对话和认知评估，为患者、家属和医护人员提供全方位的支持。
 
-## Project Overview
+### 🎯 核心价值
+- **患者关怀**: 提供24/7的AI陪伴和认知支持
+- **家属支持**: 实时监控患者状态，提供专业建议
+- **医疗辅助**: 为医护人员提供详细的评估报告和分析
+- **数据驱动**: 基于AI的智能分析和预测
 
-- **Purpose:**
-  - To build a cutting-edge, extensible, and healthcare-oriented AI companion web application for Alzheimer's patients.
-  - To integrate state-of-the-art real-time communication, multimodal AI, and knowledge retrieval technologies for enhanced patient engagement and cognitive assessment.
+## ✨ 主要功能
 
-- **Key Features:**
-  - ✅ **Real-time voice and text conversation** with AI agents using TEN Framework
-  - ✅ **Multimodal interaction**: voice, text, and image input processing
-  - ✅ **Three-stage assessment flow**: Basic questionnaire → Case upload → AI conversation
-  - ✅ **Virtual patient profiles**: Early, middle, and late-stage Alzheimer's simulation
-  - ✅ **Cognitive assessment tools** embedded in natural dialogue
-  - ✅ **Personalized knowledge retrieval** using RAG and medical knowledge bases
-  - ✅ **Family/doctor dashboards** for data visualization and trend analysis
-  - ✅ **Emotion recognition** and empathy in AI responses
-  - ✅ **PDF report generation** with charts and comprehensive analysis
-  - ✅ **Social sharing** capabilities for reports and insights
-  - ✅ **Secure, privacy-focused architecture**
+### 🤖 AI智能对话
+- **多模态交互**: 支持语音、文字、图像输入
+- **实时对话**: 基于MiniMax API的智能对话系统
+- **情感识别**: AI驱动的情绪状态分析
+- **认知评估**: 嵌入MMSE式评估的自然对话
 
-## System Architecture
+### 📋 三阶段评估流程
+1. **基础评估**: 收集患者信息、症状和家族史
+2. **案例上传**: 上传医疗图像和案例描述
+3. **AI对话**: 智能对话与认知测试
 
-- **Frontend:**
-  - Built with React 18, TypeScript, Vite, Tailwind CSS, Zustand, and Radix UI
-  - Integrates Agora Web SDK for real-time audio streaming
-  - Communicates with backend via REST API and WebSocket for low-latency messaging
-  - Responsive design optimized for elderly users
+### 👥 虚拟患者系统
+- **早期阶段**: 轻度认知障碍模拟
+- **中期阶段**: 中度症状模拟
+- **晚期阶段**: 重度症状模拟
 
-- **Backend:**
-  - Node.js (v18+), Express, TypeScript
-  - Integrates TEN (Transformative Extensions Network) Framework for modular AI agent orchestration
-  - Uses LangChain and Pinecone for RAG (retrieval-augmented generation) and vector database
-  - Supports integration with Stepfun AI, ElevenLabs (TTS), and other AI services
-  - REST and WebSocket APIs for frontend communication
-  - Supabase for data storage and authentication
+### 📊 报告与分析
+- **家属简报**: 通俗易懂的健康状态报告
+- **医生报告**: 专业的医疗分析报告
+- **PDF报告**: 包含图表和详细分析的可下载报告
+- **社交分享**: 支持报告分享和传播
 
-- **DevOps:**
-  - Docker/Docker Compose for local development and deployment
-  - Environment variables managed via `.env` files
-  - Automated deployment to cloud platform
+### 🏥 病史助手（新增）
+- **多模态输入**: 支持文字、图片、文档上传
+- **智能整理**: AI自动整理非结构化病史信息
+- **实时更新**: 自动更新家属简报和医生仪表盘
+- **专业分析**: 生成结构化的病史摘要和建议
 
-## Tech Stack
+## 🏗️ 技术架构
 
-- **Frontend:**
-  - React 18, TypeScript, Vite, Tailwind CSS, Zustand, Radix UI
-  - Agora Web SDK, jsPDF, Recharts, React Hook Form
-- **Backend:**
-  - Node.js, Express, TypeScript, TEN Framework, LangChain, Pinecone
-  - Supabase, WebSocket, REST API, Stepfun AI, ElevenLabs
-- **AI/ML Services:**
-  - Stepfun AI (LLM), ElevenLabs (TTS), Gemini (multimodal), Chart.js
-- **DevOps:**
-  - Docker, Docker Compose, Cloud deployment
+### 前端技术栈
+- **框架**: React 18 + TypeScript + Vite
+- **样式**: Tailwind CSS + Radix UI
+- **状态管理**: Zustand
+- **路由**: React Router DOM
+- **实时通信**: Agora Web SDK
+- **图表**: Recharts
+- **PDF生成**: jsPDF + html2canvas
 
-## Getting Started
+### 后端技术栈
+- **运行时**: Node.js 18+ + Express + TypeScript
+- **AI服务**: MiniMax API + TEN Framework
+- **数据库**: Supabase (PostgreSQL)
+- **向量数据库**: Pinecone
+- **文件处理**: Multer + Sharp
+- **认证**: JWT + bcryptjs
+- **实时通信**: WebSocket
 
-### Prerequisites
-- Node.js v18+
-- npm or pnpm
-- Docker & Docker Compose (for full-stack/local deployment)
+### AI/ML服务
+- **大语言模型**: MiniMax API (abab6.5s-chat)
+- **语音合成**: ElevenLabs
+- **图像分析**: 多模态AI处理
+- **知识检索**: RAG (Retrieval-Augmented Generation)
 
-### Setup
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/yourusername/MedJourney.git
-   cd MedJourney
-   ```
+### 部署与运维
+- **容器化**: Docker + Docker Compose
+- **反向代理**: Nginx
+- **环境管理**: 环境变量配置
+- **监控**: Winston日志系统
 
-2. **Configure environment variables:**
-   - Copy `.env.example` to `.env` in both backend and frontend directories
-   - Fill in required API keys:
-     - Agora App ID
-     - Stepfun AI API Key
-     - ElevenLabs API Key
-     - Pinecone API Key
-     - Supabase credentials
+## 🚀 快速开始
 
-3. **Install dependencies:**
-   - Backend:
-     ```sh
-     cd medjourney-backend
-     npm install
-     # or
-     pnpm install
-     ```
-   - Frontend:
-     ```sh
-     cd ../medjourney-frontend
-     npm install
-     # or
-     pnpm install
-     ```
+### 环境要求
+- Node.js 18+
+- npm 或 pnpm
+- Docker & Docker Compose (可选)
 
-4. **Run locally:**
-   - Backend:
-     ```sh
-     cd medjourney-backend
-     npm run dev
-     ```
-   - Frontend:
-     ```sh
-     cd medjourney-frontend
-     npm run dev
-     ```
+### 1. 克隆项目
+```bash
+git clone https://github.com/yourusername/MedJourney.git
+cd MedJourney
+```
 
-5. **(Optional) Run with Docker Compose:**
-   ```sh
-   docker-compose up --build
-   ```
+### 2. 环境配置
+```bash
+# 前端配置
+cd medjourney-frontend
+cp .env.example .env
+# 编辑 .env 文件，配置必要的API密钥
 
-## Core Features
+# 后端配置
+cd ../medjourney-backend
+cp .env.example .env
+# 编辑 .env 文件，配置数据库和API密钥
+```
 
-### 🏥 Three-Stage Assessment Flow
-1. **Basic Assessment** - Collect patient information, symptoms, and family history
-2. **Case Upload** - Upload medical images and case descriptions
-3. **AI Conversation** - Intelligent dialogue with cognitive testing and emotion analysis
+### 3. 安装依赖
+```bash
+# 前端依赖
+cd medjourney-frontend
+npm install
 
-### 🤖 AI-Powered Features
-- **TEN Framework Integration** - Multi-modal AI conversation (voice, text, image)
-- **Real-time Voice Communication** - Agora-powered audio streaming
-- **Emotion Recognition** - AI-driven emotional state analysis
-- **Cognitive Assessment** - Embedded MMSE-style evaluations
-- **Personalized Responses** - Context-aware AI interactions
+# 后端依赖
+cd ../medjourney-backend
+npm install
+```
 
-### 📊 Reporting & Analytics
-- **Comprehensive Reports** - PDF generation with charts and analysis
-- **Family Dashboard** - Progress tracking and trend visualization
-- **Doctor Reports** - Professional medical summaries
-- **Social Sharing** - Easy sharing via links and social media
+### 4. 启动开发环境
+```bash
+# 启动后端服务
+cd medjourney-backend
+npm run dev
 
-### 👥 Virtual Patient System
-- **Early-stage Alzheimer's** - Mild cognitive impairment simulation
-- **Middle-stage Alzheimer's** - Moderate symptoms simulation  
-- **Late-stage Alzheimer's** - Advanced symptoms simulation
+# 启动前端服务
+cd ../medjourney-frontend
+npm run dev
+```
 
-## API Endpoints
+### 5. 访问应用
+- 前端: http://localhost:5173
+- 后端API: http://localhost:3000
 
-### Core Services
-- `POST /api/conversation/start` - Start TEN Framework conversation session
-- `POST /api/conversation/:sessionId/message` - Send multi-modal messages
-- `GET /api/conversation/:sessionId/analysis` - Get real-time conversation analysis
-- `POST /api/speech/synthesize` - ElevenLabs voice synthesis
-- `POST /api/assessment/analyze` - Assessment analysis
-- `GET /api/reports/:sessionId/generate` - Generate detailed reports
+## 🔧 配置说明
 
-### Health & Testing
-- `GET /api/health` - System health check
-- `POST /api/test/stepfun` - Stepfun AI service test
-- `POST /api/test/emotion` - Emotion analysis test
-- `GET /api/test/status` - Service status check
+### 必需的环境变量
 
-## Development Status
+#### 前端 (.env)
+```env
+# MiniMax API配置
+VITE_MINIMAX_API_KEY=your_minimax_api_key
+VITE_MINIMAX_GROUP_ID=your_group_id
 
-### ✅ Completed Features
-- [x] Complete frontend application with 7 core pages
-- [x] Backend API with full REST and WebSocket support
-- [x] TEN Framework integration for multi-modal AI
-- [x] Agora real-time voice communication
-- [x] Three-stage assessment workflow
-- [x] Virtual patient profiles system
-- [x] PDF report generation and sharing
-- [x] Emotion recognition and analysis
-- [x] Responsive UI optimized for elderly users
-- [x] Production deployment and testing
+# Agora配置
+VITE_AGORA_APP_ID=your_agora_app_id
+VITE_AGORA_APP_TOKEN=your_agora_token
 
-### 🔄 Current Development
-- Enhanced AI conversation capabilities
-- Advanced cognitive assessment tools
-- Family dashboard improvements
-- Performance optimization
+# API基础URL
+VITE_API_BASE_URL=http://localhost:3000/api
+```
 
-## Contributing
+#### 后端 (.env)
+```env
+# 数据库配置
+DATABASE_URL=your_supabase_database_url
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+# AI服务配置
+MINIMAX_API_KEY=your_minimax_api_key
+MINIMAX_GROUP_ID=your_group_id
+STEPFUN_API_KEY=your_stepfun_api_key
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
 
-## License
+# Pinecone配置
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_ENVIRONMENT=your_pinecone_environment
 
-This project is licensed under the MIT License.
+# JWT配置
+JWT_SECRET=your_jwt_secret
+```
 
-## Acknowledgements
-- TEN Framework (by Agora)
-- Stepfun AI, ElevenLabs, Pinecone, Supabase
-- All open-source contributors and the healthcare AI community
+## 📱 核心页面
+
+### 主要功能页面
+- **仪表盘** (`/dashboard`): 系统概览和快速操作
+- **病史助手** (`/history`): AI驱动的病史整理和对话
+- **基础评估** (`/assessment/basic`): 患者基础信息收集
+- **案例上传** (`/assessment/case`): 医疗文档和图像上传
+- **AI对话** (`/assessment/chat`): 智能对话和认知评估
+- **虚拟患者** (`/virtual-patients`): 不同阶段的患者模拟
+
+### 报告页面
+- **家属简报** (`/reports/family`): 面向家属的健康报告
+- **医生报告** (`/reports/doctor`): 专业的医疗分析报告
+- **分享报告** (`/reports/share`): 报告分享和传播
+
+### 测试页面
+- **病史助手测试** (`/test-history-assistant`): 病史助手功能测试
+- **MiniMax测试** (`/test-minimax`): MiniMax API连接测试
+
+## 🔌 API接口
+
+### 核心服务接口
+```http
+# 对话管理
+POST /api/conversation/start          # 开始对话会话
+POST /api/conversation/:id/message    # 发送消息
+GET  /api/conversation/:id/analysis   # 获取对话分析
+
+# 评估管理
+POST /api/assessment/basic            # 提交基础评估
+POST /api/assessment/case             # 上传案例文件
+POST /api/assessment/chat             # 提交聊天评估
+
+# 报告生成
+GET  /api/reports/family/:id          # 生成家属简报
+GET  /api/reports/doctor/:id          # 生成医生报告
+POST /api/reports/share               # 分享报告
+
+# 病史助手
+POST /api/history/update-family       # 更新家属简报
+POST /api/history/update-doctor       # 更新医生仪表盘
+GET  /api/history/realtime            # 获取实时数据
+```
+
+### 健康检查接口
+```http
+GET  /api/health                      # 系统健康检查
+POST /api/test/stepfun               # Stepfun AI服务测试
+GET  /api/test/status                # 服务状态检查
+```
+
+## 🧪 测试功能
+
+### 病史助手测试
+访问 `/test-history-assistant` 页面进行完整的功能测试：
+- MiniMax API连接测试
+- 多模态消息处理测试
+- 报告生成测试
+- 实时数据更新测试
+
+### 功能验证
+```bash
+# 运行前端测试
+cd medjourney-frontend
+npm run test
+
+# 运行后端测试
+cd medjourney-backend
+npm run test
+```
+
+## 🚀 部署
+
+### Docker部署
+```bash
+# 构建并启动所有服务
+docker-compose up --build
+
+# 后台运行
+docker-compose up -d --build
+```
+
+### 生产环境部署
+```bash
+# 构建生产版本
+cd medjourney-frontend
+npm run build
+
+cd ../medjourney-backend
+npm run build
+
+# 启动生产服务
+npm start
+```
+
+## 📊 项目结构
+
+```
+MedJourney/
+├── medjourney-frontend/          # 前端应用
+│   ├── src/
+│   │   ├── pages/               # 页面组件
+│   │   ├── components/          # 通用组件
+│   │   ├── services/            # API服务
+│   │   ├── hooks/               # 自定义Hooks
+│   │   ├── stores/              # 状态管理
+│   │   └── utils/               # 工具函数
+│   └── package.json
+├── medjourney-backend/           # 后端API
+│   ├── src/
+│   │   ├── controllers/         # 控制器
+│   │   ├── services/            # 业务逻辑
+│   │   ├── middleware/          # 中间件
+│   │   ├── routes/              # 路由定义
+│   │   └── utils/               # 工具函数
+│   └── package.json
+├── docs/                        # 项目文档
+├── docker-compose.yml           # Docker配置
+├── nginx.conf                   # Nginx配置
+└── README.md                    # 项目说明
+```
+
+## 🔒 安全特性
+
+- **JWT认证**: 安全的用户认证机制
+- **API限流**: 防止API滥用
+- **数据加密**: 敏感数据加密传输
+- **CORS配置**: 跨域请求安全控制
+- **输入验证**: 严格的数据验证和清理
+
+## 🤝 贡献指南
+
+### 开发环境设置
+1. Fork项目仓库
+2. 创建功能分支: `git checkout -b feature/amazing-feature`
+3. 提交更改: `git commit -m 'Add some amazing feature'`
+4. 推送分支: `git push origin feature/amazing-feature`
+5. 创建Pull Request
+
+### 代码规范
+- 使用TypeScript严格模式
+- 遵循ESLint规则
+- 编写单元测试
+- 添加JSDoc注释
+
+## 📝 更新日志
+
+### v2.0.0 (2025-07-27)
+- ✨ 新增病史助手功能
+- 🔧 集成MiniMax API
+- 📊 实时数据更新机制
+- 🧪 完善测试功能
+- 🎨 UI/UX优化
+
+### v1.0.0 (2025-07-20)
+- 🚀 初始版本发布
+- 🤖 AI对话功能
+- 📋 三阶段评估流程
+- 👥 虚拟患者系统
+- 📊 报告生成功能
+
+## 📄 许可证
+
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+
+## 🙏 致谢
+
+- [MiniMax](https://www.minimax.chat/) - AI对话服务
+- [Agora](https://www.agora.io/) - 实时通信服务
+- [Supabase](https://supabase.com/) - 数据库服务
+- [Pinecone](https://www.pinecone.io/) - 向量数据库
+- [ElevenLabs](https://elevenlabs.io/) - 语音合成服务
+
+## 📞 联系我们
+
+- **项目主页**: https://github.com/yourusername/MedJourney
+- **在线演示**: https://06jy00o1s5lb.space.minimax.io
+- **问题反馈**: [GitHub Issues](https://github.com/yourusername/MedJourney/issues)
+
+---
+
+**MedJourney** - 让AI陪伴每一位阿尔茨海默病患者 🏥💙
