@@ -194,7 +194,6 @@ const AssessmentChatPage: React.FC = () => {
       messages
     };
     
-    console.log('完整评估数据:', assessmentData);
     navigate(ROUTES.FAMILY_SUMMARY);
   };
 

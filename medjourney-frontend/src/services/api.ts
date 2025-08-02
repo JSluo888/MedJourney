@@ -94,7 +94,6 @@ class MockDatabase {
   async getMessages(userId: string): Promise<Message[]> {
     await delay(100);
     const messages = this.messages.get(userId) || [];
-    console.log(`获取用户 ${userId} 的消息:`, messages.length, '条');
     return messages;
   }
 
@@ -107,7 +106,6 @@ class MockDatabase {
     };
     userMessages.push(newMessage);
     this.messages.set(userId, userMessages);
-    console.log(`为用户 ${userId} 添加消息:`, newMessage.content.substring(0, 50));
     return newMessage;
   }
 

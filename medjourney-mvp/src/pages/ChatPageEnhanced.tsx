@@ -43,11 +43,9 @@ const ChatPageEnhanced: React.FC = () => {
     userId: user?.id || 'anonymous',
     autoConnect: true,
     onMessage: (message: VoiceMessage) => {
-      console.log('收到TEN Framework消息:', message);
       // 不需要手动设置voiceMessages，hook已经管理了tenMessages状态
     },
     onStatusChange: (status: string) => {
-      console.log('TEN状态变化:', status);
     },
     onError: (error: Error) => {
       console.error('TEN错误:', error);
@@ -189,11 +187,9 @@ const ChatPageEnhanced: React.FC = () => {
             <VoiceRecorder
               userId={user?.id || 'anonymous'}
               onMessage={(message) => {
-                console.log('收到VoiceRecorder消息:', message);
                 // VoiceRecorder消息现在由TEN Framework统一管理
               }}
               onStatusChange={(status) => {
-                console.log('语音状态:', status);
               }}
             />
           </div>

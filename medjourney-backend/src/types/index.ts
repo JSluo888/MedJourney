@@ -238,6 +238,9 @@ export interface Config {
     stepfun_api_key: string;
     stepfun_base_url: string;
     stepfun_model: string;
+    minimax_api_key: string;
+    minimax_group_id: string;
+    elevenlabs_api_key: string;
   };
   storage: {
     max_file_size: number;

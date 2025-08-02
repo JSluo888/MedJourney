@@ -61,7 +61,6 @@ const ChatPage: React.FC = () => {
             setAudioLevel(level);
           },
           onMessage: (message: Message) => {
-            console.log('收到AI消息:', message);
             // 消息已通过useMessages hook自动处理
           },
           onStatusChange: (status: 'idle' | 'listening' | 'processing' | 'speaking') => {
@@ -76,7 +75,6 @@ const ChatPage: React.FC = () => {
         agoraServiceRef.current = new EnhancedAgoraService(callbacks);
         await agoraServiceRef.current.initialize();
         
-        console.log('增强版服务初始化成功');
       } catch (error) {
         console.error('初始化服务失败:', error);
         setError('初始化失败，请刷新页面重试');

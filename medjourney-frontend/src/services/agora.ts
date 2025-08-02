@@ -39,7 +39,6 @@ export class AgoraService {
   private setupEventListeners() {
     // 监听远端用户发布音频事件
     this.client.on('user-published', async (user, mediaType) => {
-      console.log('远端用户发布媒体:', user.uid, mediaType);
       
       if (mediaType === 'audio') {
         try {
@@ -53,7 +52,6 @@ export class AgoraService {
             
             // 播放远端音频
             remoteAudioTrack.play();
-            console.log('开始播放远端音频:', user.uid);
           }
         } catch (error) {
           console.error('订阅远端音频失败:', error);
@@ -63,7 +61,6 @@ export class AgoraService {
 
     // 监听远端用户取消发布事件
     this.client.on('user-unpublished', (user, mediaType) => {
-      console.log('远端用户取消发布媒体:', user.uid, mediaType);
       
       if (mediaType === 'audio') {
         const remoteAudioTrack = this.remoteAudioTracks.get(user.uid);
@@ -76,7 +73,6 @@ export class AgoraService {
 
     // 监听用户离开事件
     this.client.on('user-left', (user) => {
-      console.log('用户离开频道:', user.uid);
       const remoteAudioTrack = this.remoteAudioTracks.get(user.uid);
       if (remoteAudioTrack) {
         remoteAudioTrack.stop();
@@ -86,7 +82,6 @@ export class AgoraService {
 
     // 监听连接状态变化
     this.client.on('connection-state-change', (curState, revState) => {
-      console.log('连接状态变化:', revState, '->', curState);
       this.isConnected = curState === 'CONNECTED';
     });
 
@@ -99,12 +94,10 @@ export class AgoraService {
   // 初始化服务
   async initialize(): Promise<void> {
     try {
-      console.log('初始化Agora服务...');
       
       // 创建音频上下文
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       
-      console.log('Agora服务初始化完成');
     } catch (error) {
       console.error('初始化Agora服务失败:', error);
       throw error;
@@ -114,7 +107,6 @@ export class AgoraService {
   // 加入频道
   async joinChannel(channelName: string, token?: string, uid?: UID): Promise<UID> {
     try {
-      console.log('加入Agora频道:', channelName);
       
       this.currentChannelName = channelName;
       this.currentToken = token || '';
@@ -130,7 +122,6 @@ export class AgoraService {
       this.currentUid = assignedUid;
       this.isConnected = true;
       
-      console.log('成功加入频道，UID:', assignedUid);
       return assignedUid;
     } catch (error) {
       console.error('加入频道失败:', error);
@@ -141,7 +132,6 @@ export class AgoraService {
   // 离开频道
   async leaveChannel(): Promise<void> {
     try {
-      console.log('离开Agora频道');
       
       // 停止录音
       if (this.isRecording) {
@@ -165,7 +155,6 @@ export class AgoraService {
       await this.client.leave();
       this.isConnected = false;
       
-      console.log('成功离开频道');
     } catch (error) {
       console.error('离开频道失败:', error);
       throw error;
@@ -175,10 +164,8 @@ export class AgoraService {
   // 开始录音
   async startRecording(): Promise<void> {
     try {
-      console.log('开始录音...');
       
       if (this.isRecording) {
-        console.warn('已经在录音中');
         return;
       }
       
@@ -219,7 +206,6 @@ export class AgoraService {
       this.mediaRecorder.start(100); // 每100ms收集一次数据
       this.isRecording = true;
       
-      console.log('录音开始');
     } catch (error) {
       console.error('开始录音失败:', error);
       throw error;
@@ -230,10 +216,8 @@ export class AgoraService {
   async stopRecording(): Promise<AudioData> {
     return new Promise((resolve, reject) => {
       try {
-        console.log('停止录音...');
         
         if (!this.isRecording || !this.mediaRecorder) {
-          console.warn('当前没有在录音');
           reject(new Error('当前没有在录音'));
           return;
         }
@@ -252,7 +236,6 @@ export class AgoraService {
             };
             
             this.isRecording = false;
-            console.log('录音完成，时长:', audioData.duration, '秒');
             
             resolve(audioData);
           } catch (error) {
@@ -273,16 +256,13 @@ export class AgoraService {
   async playAudio(audioUrl: string): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        console.log('播放音频:', audioUrl);
         
         const audio = new Audio(audioUrl);
         
         audio.onloadeddata = () => {
-          console.log('音频加载完成');
         };
         
         audio.onended = () => {
-          console.log('音频播放结束');
           resolve();
         };
         
@@ -314,7 +294,6 @@ export class AgoraService {
         track.stop();
       });
       
-      console.log('停止音频播放');
     } catch (error) {
       console.error('停止音频播放失败:', error);
     }
@@ -328,7 +307,6 @@ export class AgoraService {
         track.setVolume(Math.max(0, Math.min(100, volume)));
       });
       
-      console.log('设置音量:', volume);
     } catch (error) {
       console.error('设置音量失败:', error);
     }
@@ -340,7 +318,6 @@ export class AgoraService {
       if (this.localAudioTrack) {
         const isMuted = this.localAudioTrack.muted;
         await this.localAudioTrack.setMuted(!isMuted);
-        console.log('麦克风', isMuted ? '取消静音' : '静音');
         return !isMuted;
       }
       return false;
@@ -376,7 +353,6 @@ export class AgoraService {
     try {
       if (this.localAudioTrack) {
         await this.localAudioTrack.setDevice(deviceId);
-        console.log('切换音频设备:', deviceId);
       }
     } catch (error) {
       console.error('切换音频设备失败:', error);
@@ -387,7 +363,6 @@ export class AgoraService {
   // 清理资源
   async cleanup(): Promise<void> {
     try {
-      console.log('清理Agora资源...');
       
       if (this.isConnected) {
         await this.leaveChannel();
@@ -399,7 +374,6 @@ export class AgoraService {
         this.audioContext = null;
       }
       
-      console.log('Agora资源清理完成');
     } catch (error) {
       console.error('清理Agora资源失败:', error);
     }

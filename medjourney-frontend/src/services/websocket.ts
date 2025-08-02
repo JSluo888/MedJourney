@@ -47,7 +47,6 @@ export class WebSocketService {
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log('WebSocket连接成功');
           this.isConnected = true;
           this.reconnectAttempts = 0;
           this.callbacks.onConnect?.();
@@ -64,7 +63,6 @@ export class WebSocketService {
         };
 
         this.ws.onclose = (event) => {
-          console.log('WebSocket连接关闭:', event.code, event.reason);
           this.isConnected = false;
           this.callbacks.onDisconnect?.();
           
@@ -87,7 +85,6 @@ export class WebSocketService {
 
   // 处理接收到的消息
   private handleMessage(message: WebSocketMessage) {
-    console.log('收到WebSocket消息:', message);
     
     this.callbacks.onMessage?.(message);
 
@@ -110,7 +107,6 @@ export class WebSocketService {
         break;
       
       default:
-        console.log('未知消息类型:', message.type);
     }
   }
 
@@ -131,7 +127,6 @@ export class WebSocketService {
         };
 
         this.ws.send(JSON.stringify(message));
-        console.log('发送WebSocket消息:', message);
         resolve();
       } catch (error) {
         console.error('发送消息失败:', error);
@@ -186,7 +181,6 @@ export class WebSocketService {
   // 自动重连
   private scheduleReconnect() {
     this.reconnectAttempts++;
-    console.log(`${this.reconnectInterval / 1000}秒后尝试重连 (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
     
     setTimeout(() => {
       if (this.sessionId) {
@@ -201,7 +195,6 @@ export class WebSocketService {
       if (this.isConnected && this.ws) {
         this.sendMessage('ping', {}).catch(() => {
           // 心跳失败，触发重连
-          console.log('心跳失败，触发重连');
           this.disconnect();
         });
       }

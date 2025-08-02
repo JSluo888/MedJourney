@@ -119,7 +119,6 @@ const AssessmentBasicPage: React.FC = () => {
         // 保存会话到本地存储
         assessmentService.saveSessionToStorage();
         
-        console.log('基础评估数据已保存:', formData);
         
         // 导航到下一个阶段
         navigate(ROUTES.ASSESSMENT_CASE);

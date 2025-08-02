@@ -53,7 +53,6 @@ app.post('/api/v1/reports/family-summary', async (req, res) => {
   try {
     const { userId, format = 'json', includeCharts = true } = req.body;
     
-    console.log('生成家属简报请求:', { userId, format, includeCharts });
     
     const patient = mockPatients[userId];
     if (!patient) {
@@ -126,7 +125,6 @@ app.post('/api/v1/reports/:sessionId/generate', async (req, res) => {
     const { sessionId } = req.params;
     const { format = 'json', includeCharts = true, includeRecommendations = true } = req.body;
     
-    console.log('生成医生报告请求:', { sessionId, format, includeCharts, includeRecommendations });
     
     const session = mockSessions[sessionId];
     if (!session) {
@@ -196,7 +194,6 @@ app.get('/api/v1/reports/list/:patientId', (req, res) => {
   try {
     const { patientId } = req.params;
     
-    console.log('获取报告列表请求:', { patientId });
     
     const patient = mockPatients[patientId];
     if (!patient) {
@@ -247,7 +244,6 @@ app.get('/api/v1/reports/:reportId/download', (req, res) => {
   try {
     const { reportId } = req.params;
     
-    console.log('下载报告请求:', { reportId });
     
     // 模拟PDF下载
     res.setHeader('Content-Type', 'application/pdf');
@@ -267,7 +263,6 @@ app.delete('/api/v1/reports/:reportId', (req, res) => {
   try {
     const { reportId } = req.params;
     
-    console.log('删除报告请求:', { reportId });
     
     res.json({
       success: true,
@@ -284,9 +279,6 @@ app.delete('/api/v1/reports/:reportId', (req, res) => {
 
 // 启动服务器
 app.listen(PORT, () => {
-  console.log(`🚀 MedJourney 测试服务器运行在 http://localhost:${PORT}`);
-  console.log(`📋 API文档: http://localhost:${PORT}/api/v1`);
-  console.log(`🔑 Stepfun API Key: ${stepfunAIService['apiKey'] ? '已配置' : '未配置'}`);
 });
 
 export default app; 

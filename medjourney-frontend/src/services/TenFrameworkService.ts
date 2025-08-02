@@ -66,7 +66,6 @@ export class TenFrameworkService {
         this.websocket = new WebSocket(wsUrl);
         
         this.websocket.onopen = () => {
-          console.log('TEN Framework WebSocket connected');
           // 发送初始化消息
           this.sendWebSocketMessage({
             type: 'initialize',
@@ -88,7 +87,6 @@ export class TenFrameworkService {
         };
         
         this.websocket.onclose = () => {
-          console.log('TEN Framework WebSocket disconnected');
           this.isConnected = false;
           this.updateStatus('disconnected');
         };
@@ -103,7 +101,6 @@ export class TenFrameworkService {
     try {
       // 在实际环境中，这将使用真实的Agora SDK
       // 这里我们模拟Agora的初始化过程
-      console.log('Initializing Agora with config:', {
         appId: this.config.appId,
         channel: this.config.channel
       });
@@ -111,7 +108,6 @@ export class TenFrameworkService {
       // 模拟成功初始化
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log('Agora initialized successfully');
     } catch (error) {
       console.error('Agora initialization failed:', error);
       throw error;
@@ -141,7 +137,6 @@ export class TenFrameworkService {
         break;
         
       default:
-        console.log('Unknown message type:', message.type);
     }
   }
 
@@ -201,7 +196,6 @@ export class TenFrameworkService {
       this.updateStatus('listening');
       
       // 在实际环境中，这将启动语音录制
-      console.log('Starting voice recording...');
       
       // 模拟语音录制过程
       this.sendWebSocketMessage({
@@ -225,7 +219,6 @@ export class TenFrameworkService {
       this.isListening = false;
       this.updateStatus('processing');
       
-      console.log('Stopping voice recording...');
       
       this.sendWebSocketMessage({
         type: 'stop_voice_recording',

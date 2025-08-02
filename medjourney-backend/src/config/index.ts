@@ -22,9 +22,12 @@ const defaultConfig: Partial<Config> = {
     temperature: 0.7,
     pinecone_api_key: 'mock-pinecone-key',
     pinecone_index: 'medjourney-knowledge',
-    stepfun_api_key: '4kNO9CYMO1ddw4s20byLvrkYtBWXowdR1OcrY8Hi7tkapqi3gMAEAzNHCl3LKqFIy',
+    stepfun_api_key: process.env.STEPFUN_API_KEY || 'mock-stepfun-key',
     stepfun_base_url: 'https://api.stepfun.com/v1',
-    stepfun_model: 'step-1-8k'
+    stepfun_model: 'step-1-8k',
+    minimax_api_key: process.env.MINIMAX_API_KEY || 'mock-minimax-key',
+    minimax_group_id: process.env.MINIMAX_GROUP_ID || 'mock-group-id',
+    elevenlabs_api_key: process.env.ELEVENLABS_API_KEY || 'mock-elevenlabs-key'
   },
   storage: {
     bucket_name: 'medjourney-storage',
@@ -78,7 +81,10 @@ function loadConfigFromEnv(): Partial<Config> {
       pinecone_index: process.env.PINECONE_INDEX || defaultConfig.ai!.pinecone_index,
       stepfun_api_key: process.env.STEPFUN_API_KEY || defaultConfig.ai!.stepfun_api_key,
       stepfun_base_url: process.env.STEPFUN_BASE_URL || defaultConfig.ai!.stepfun_base_url,
-      stepfun_model: process.env.STEPFUN_MODEL || defaultConfig.ai!.stepfun_model
+      stepfun_model: process.env.STEPFUN_MODEL || defaultConfig.ai!.stepfun_model,
+      minimax_api_key: process.env.MINIMAX_API_KEY || defaultConfig.ai!.minimax_api_key,
+      minimax_group_id: process.env.MINIMAX_GROUP_ID || defaultConfig.ai!.minimax_group_id,
+      elevenlabs_api_key: process.env.ELEVENLABS_API_KEY || defaultConfig.ai!.elevenlabs_api_key
     },
     storage: {
       bucket_name: process.env.STORAGE_BUCKET || defaultConfig.storage!.bucket_name,

@@ -36,7 +36,6 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
-    console.log('API请求:', config.method?.toUpperCase(), config.url, config.data);
     return config;
   },
   (error) => {
@@ -48,7 +47,6 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   (response: AxiosResponse<ApiResponse>) => {
-    console.log('API响应:', response.status, response.data);
     return response;
   },
   (error) => {
@@ -334,10 +332,8 @@ export class ApiService {
     healthScore: number;
     emotionalState: string;
   }): Promise<ApiResponse> {
-    console.log('ApiService.updateFamilyReport 开始调用:', reportData);
     try {
       const response = await api.post('/reports/family/update', reportData);
-      console.log('ApiService.updateFamilyReport 成功:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('ApiService.updateFamilyReport 失败:', error);
@@ -350,7 +346,6 @@ export class ApiService {
           ...reportData
         }
       };
-      console.log('ApiService.updateFamilyReport 返回模拟响应:', mockResponse);
       return mockResponse;
     }
   }
@@ -368,10 +363,8 @@ export class ApiService {
     };
     recommendations: string[];
   }): Promise<ApiResponse> {
-    console.log('ApiService.updateDoctorDashboard 开始调用:', dashboardData);
     try {
       const response = await api.post('/doctor/dashboard/update', dashboardData);
-      console.log('ApiService.updateDoctorDashboard 成功:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('ApiService.updateDoctorDashboard 失败:', error);
@@ -384,7 +377,6 @@ export class ApiService {
           ...dashboardData
         }
       };
-      console.log('ApiService.updateDoctorDashboard 返回模拟响应:', mockResponse);
       return mockResponse;
     }
   }

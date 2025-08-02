@@ -87,7 +87,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         await ApiService.logout();
       } catch (error) {
-        console.warn('后端登出失败:', error);
       }
       
       // 清除本地存储

@@ -30,14 +30,12 @@ class TENFrameworkService {
 
   async initialize(): Promise<void> {
     try {
-      console.log('初始化 TEN Framework 连接...');
       
       // 在实际应用中，这里会连接到真实的TEN Agent WebSocket
       // 目前使用模拟实现，展示完整的集成架构
       
       await this.connectWebSocket();
       
-      console.log('TEN Framework 初始化成功');
     } catch (error) {
       console.error('TEN Framework 初始化失败:', error);
       this.callbacks.onError('AI服务连接失败');
@@ -50,7 +48,6 @@ class TENFrameworkService {
       try {
         // 模拟WebSocket连接
         // 在实际应用中，这里会连接到TEN Agent的WebSocket端点
-        console.log('连接到 TEN Agent WebSocket:', this.config.websocketUrl);
         
         // 模拟连接延迟
         setTimeout(() => {
@@ -60,7 +57,6 @@ class TENFrameworkService {
           // 模拟连接成功
           this.callbacks.onStatusChange('idle');
           
-          console.log('TEN Framework WebSocket 连接成功');
           resolve();
         }, 1000);
         
@@ -78,7 +74,6 @@ class TENFrameworkService {
     }
 
     try {
-      console.log('发送文本消息到 TEN Agent:', text);
       
       this.callbacks.onStatusChange('processing');
       
@@ -91,7 +86,6 @@ class TENFrameworkService {
       };
       
       // 模拟发送到TEN Agent
-      console.log('消息已发送到 TEN Agent:', message);
       
       // 模拟AI处理和回复
       await this.simulateTENResponse(text);
@@ -110,7 +104,6 @@ class TENFrameworkService {
     }
 
     try {
-      console.log('发送音频数据到 TEN Agent, 大小:', audioData.byteLength);
       
       this.callbacks.onStatusChange('processing');
       
@@ -123,7 +116,6 @@ class TENFrameworkService {
         sampleRate: 16000
       };
       
-      console.log('音频数据已发送到 TEN Agent');
       
       // 模拟STT处理
       await this.simulateSTTProcessing(audioData);
@@ -142,7 +134,6 @@ class TENFrameworkService {
     }
 
     try {
-      console.log('发送图像数据到 TEN Agent:', imageUrl);
       
       this.callbacks.onStatusChange('processing');
       
@@ -153,7 +144,6 @@ class TENFrameworkService {
         timestamp: new Date().toISOString()
       };
       
-      console.log('图像数据已发送到 TEN Agent');
       
       // 模拟多模态AI处理
       await this.simulateImageProcessing(imageUrl);
@@ -168,7 +158,6 @@ class TENFrameworkService {
   // 启动会话
   async startSession(userId: string): Promise<void> {
     try {
-      console.log('启动 TEN Agent 会话:', userId);
       
       const sessionMessage = {
         type: 'start_session',
@@ -183,7 +172,6 @@ class TENFrameworkService {
       };
       
       // 在实际应用中发送到TEN Agent
-      console.log('会话已启动:', sessionMessage);
       
       this.callbacks.onStatusChange('listening');
       
@@ -197,7 +185,6 @@ class TENFrameworkService {
   // 结束会话
   async endSession(): Promise<void> {
     try {
-      console.log('结束 TEN Agent 会话');
       
       const endMessage = {
         type: 'end_session',
@@ -205,7 +192,6 @@ class TENFrameworkService {
       };
       
       // 在实际应用中发送到TEN Agent
-      console.log('会话已结束:', endMessage);
       
       this.callbacks.onStatusChange('idle');
       
@@ -258,7 +244,6 @@ class TENFrameworkService {
     ];
     
     const recognizedText = sttTexts[Math.floor(Math.random() * sttTexts.length)];
-    console.log('STT识别结果:', recognizedText);
     
     // 创建用户消息
     const userMessage: Message = {
@@ -391,7 +376,6 @@ class TENFrameworkService {
     }
     
     this.reconnectAttempts++;
-    console.log(`尝试重连 TEN Framework (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
     
     await new Promise(resolve => setTimeout(resolve, this.reconnectDelay));
     
@@ -407,7 +391,6 @@ class TENFrameworkService {
   // 断开连接
   async disconnect(): Promise<void> {
     try {
-      console.log('断开 TEN Framework 连接');
       
       this.isConnected = false;
       

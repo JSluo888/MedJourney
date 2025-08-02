@@ -39,12 +39,10 @@ class EnhancedAgoraService {
 
   async initialize(): Promise<void> {
     if (this.isInitialized) {
-      console.log('Agora服务已初始化');
       return;
     }
 
     try {
-      console.log('初始化增强版Agora服务...');
       
       // 初始化Agora客户端
       await this.initializeAgoraClient();
@@ -55,7 +53,6 @@ class EnhancedAgoraService {
       this.isInitialized = true;
       this.callbacks.onConnectionStateChange(true);
       
-      console.log(`增强版Agora服务初始化成功. 频道: ${this.channelName}`);
     } catch (error) {
       console.error('增强版Agora服务初始化失败:', error);
       this.callbacks.onError(`初始化失败: ${error}`);
@@ -90,7 +87,6 @@ class EnhancedAgoraService {
         ANS: true, // 噪声抑制
       });
       
-      console.log('Agora客户端初始化成功');
     } catch (error) {
       console.error('Agora客户端初始化失败:', error);
       throw error;
@@ -134,7 +130,6 @@ class EnhancedAgoraService {
       // 初始化TEN服务
       await this.tenService.initialize();
       
-      console.log('TEN Framework服务初始化成功');
     } catch (error) {
       console.error('TEN Framework服务初始化失败:', error);
       throw error;
@@ -146,13 +141,11 @@ class EnhancedAgoraService {
     
     // 监听连接状态变化
     this.client.on('connection-state-change', (curState: ConnectionState, revState: ConnectionState) => {
-      console.log(`Agora连接状态变化: ${revState} -> ${curState}`);
       this.callbacks.onConnectionStateChange(curState === 'CONNECTED');
     });
     
     // 监听远端用户加入
     this.client.on('user-joined', (user) => {
-      console.log('远端用户加入:', user.uid);
       
       // 如果是TEN Agent加入，启动会话
       if (user.uid.toString().includes('ten-agent')) {
@@ -168,7 +161,6 @@ class EnhancedAgoraService {
         if (remoteAudioTrack) {
           this.remoteAudioTracks.set(user.uid.toString(), remoteAudioTrack);
           remoteAudioTrack.play();
-          console.log('订阅远端音频成功');
           
           // 通知状态变化
           this.callbacks.onStatusChange('speaking');
@@ -180,7 +172,6 @@ class EnhancedAgoraService {
     this.client.on('user-unpublished', (user, mediaType) => {
       if (mediaType === 'audio') {
         this.remoteAudioTracks.delete(user.uid.toString());
-        console.log('远端用户取消发布音频');
         this.callbacks.onStatusChange('listening');
       }
     });
@@ -188,7 +179,6 @@ class EnhancedAgoraService {
     // 监听用户离开
     this.client.on('user-left', (user) => {
       this.remoteAudioTracks.delete(user.uid.toString());
-      console.log('远端用户离开:', user.uid);
     });
     
     // 监听异常
@@ -202,7 +192,6 @@ class EnhancedAgoraService {
     if (this.tenService) {
       try {
         // TEN服务已经在initialize中启动
-        console.log('TEN会话已启动');
       } catch (error) {
         console.error('启动TEN会话失败:', error);
       }
@@ -213,7 +202,6 @@ class EnhancedAgoraService {
     if (!this.client || !this.localAudioTrack || this.isRecording) return;
     
     try {
-      console.log('开始录音和音频流传输...');
       
       // 发布本地音频到Agora频道（供TEN Agent接收）
       await this.client.publish([this.localAudioTrack]);
@@ -225,7 +213,6 @@ class EnhancedAgoraService {
       this.startAudioLevelMonitoring();
       this.callbacks.onStatusChange('listening');
       
-      console.log('录音和音频流传输已启动');
     } catch (error) {
       console.error('启动录音失败:', error);
       this.callbacks.onError('开始录音失败');
@@ -282,7 +269,6 @@ class EnhancedAgoraService {
     if (!this.client || !this.localAudioTrack || !this.isRecording) return;
     
     try {
-      console.log('停止录音和音频流传输...');
       
       // 停止发布本地音频
       await this.client.unpublish([this.localAudioTrack]);
@@ -296,7 +282,6 @@ class EnhancedAgoraService {
       this.stopAudioLevelMonitoring();
       this.callbacks.onStatusChange('processing');
       
-      console.log('录音和音频流传输已停止');
     } catch (error) {
       console.error('停止录音失败:', error);
       this.callbacks.onError('停止录音失败');
@@ -324,7 +309,6 @@ class EnhancedAgoraService {
   }
 
   async sendTextMessage(text: string): Promise<void> {
-    console.log('发送文本消息:', text);
     
     if (this.tenService) {
       try {
@@ -334,13 +318,11 @@ class EnhancedAgoraService {
         this.callbacks.onError('消息发送失败');
       }
     } else {
-      console.warn('TEN Framework服务未可用，无法发送消息');
       this.callbacks.onError('AI服务暂时不可用');
     }
   }
 
   async sendImageMessage(imageUrl: string): Promise<void> {
-    console.log('发送图像消息:', imageUrl);
     
     if (this.tenService) {
       try {
@@ -354,14 +336,12 @@ class EnhancedAgoraService {
         this.callbacks.onError('图像处理失败');
       }
     } else {
-      console.warn('TEN Framework服务未可用，无法处理图像');
       this.callbacks.onError('AI服务暂时不可用');
     }
   }
 
   // 打断当前AI语音播放
   async interruptAI(): Promise<void> {
-    console.log('打断AI语音播放');
     
     // 停止所有远端音频播放
     this.remoteAudioTracks.forEach(track => {
@@ -371,7 +351,6 @@ class EnhancedAgoraService {
     // 通知TEN Framework停止当前TTS
     if (this.tenService) {
       // 在实际的TEN Framework集成中，这里会发送打断信号
-      console.log('发送打断信号到TEN Framework');
     }
     
     // 重新开始监听
@@ -380,7 +359,6 @@ class EnhancedAgoraService {
 
   async disconnect(): Promise<void> {
     try {
-      console.log('断开增强版Agora服务连接');
       
       this.stopAudioLevelMonitoring();
       
@@ -414,7 +392,6 @@ class EnhancedAgoraService {
       this.isInitialized = false;
       this.callbacks.onConnectionStateChange(false);
       
-      console.log('增强版Agora服务已断开连接');
     } catch (error) {
       console.error('断开连接失败:', error);
     }
@@ -445,7 +422,6 @@ class EnhancedAgoraService {
     if (this.localAudioTrack) {
       try {
         // await this.localAudioTrack.setEncoderConfiguration(quality);
-        console.log('音频质量已设置为:', quality);
       } catch (error) {
         console.error('设置音频质量失败:', error);
       }

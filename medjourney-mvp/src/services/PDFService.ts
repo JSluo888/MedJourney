@@ -99,7 +99,6 @@ export class PDFService {
           
           pdf.addImage(imgData, 'PNG', margin, yPosition, imgWidth, imgHeight);
         } catch (error) {
-          console.warn('Failed to capture charts:', error);
         }
       }
       

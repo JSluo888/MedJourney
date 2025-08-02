@@ -121,7 +121,6 @@ const AssessmentCasePage: React.FC = () => {
 
   const handleSubmit = () => {
     if (validateForm()) {
-      console.log('病例资料数据:', formData);
       navigate(ROUTES.ASSESSMENT_CHAT);
     }
   };

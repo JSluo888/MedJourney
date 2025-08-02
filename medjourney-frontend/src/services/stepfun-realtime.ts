@@ -45,7 +45,6 @@ export class StepfunRealtimeService extends EventEmitter {
         this.ws = new WebSocket('wss://api.stepfun.com/v1/realtime');
         
         this.ws.onopen = () => {
-          console.log('Stepfun Realtime WebSocket 连接成功');
           this.isConnected = true;
           this.emit('connected');
           resolve();
@@ -62,7 +61,6 @@ export class StepfunRealtimeService extends EventEmitter {
         };
 
         this.ws.onclose = () => {
-          console.log('Stepfun Realtime WebSocket 连接关闭');
           this.isConnected = false;
           this.emit('disconnected');
         };
@@ -94,7 +92,6 @@ export class StepfunRealtimeService extends EventEmitter {
   private handleMessage(data: string): void {
     try {
       const message = JSON.parse(data);
-      console.log('收到 Stepfun 消息:', message);
 
       switch (message.type) {
         case 'session.created':
@@ -156,7 +153,6 @@ export class StepfunRealtimeService extends EventEmitter {
           break;
 
         default:
-          console.log('未处理的消息类型:', message.type);
       }
     } catch (error) {
       console.error('解析消息失败:', error);

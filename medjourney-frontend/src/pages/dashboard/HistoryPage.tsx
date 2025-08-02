@@ -92,15 +92,12 @@ const HistoryPage: React.FC = () => {
   // 处理文件选择
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    console.log('文件选择事件触发:', { filesCount: files?.length || 0 });
     
     if (!files) {
-      console.log('没有选择文件');
       return;
     }
 
     Array.from(files).forEach(file => {
-      console.log('处理文件:', { 
         name: file.name, 
         type: file.type, 
         size: file.size,
@@ -117,13 +114,11 @@ const HistoryPage: React.FC = () => {
         uploadedAt: new Date().toISOString()
       };
       
-      console.log('文件处理完成:', uploadedFile);
       setUploadedFiles(prev => [...prev, uploadedFile]);
     });
 
     // 清空input值，允许重复选择同一文件
     event.target.value = '';
-    console.log('文件选择处理完成');
   };
 
   // 删除文件
@@ -140,11 +135,9 @@ const HistoryPage: React.FC = () => {
   // 发送消息
   const sendMessage = async () => {
     if ((!inputText.trim() && uploadedFiles.length === 0) || isGenerating) {
-      console.log('消息发送被阻止:', { inputText: inputText.trim(), filesCount: uploadedFiles.length, isGenerating });
       return;
     }
 
-    console.log('开始发送消息...', { 
       textLength: inputText.trim().length, 
       filesCount: uploadedFiles.length,
       files: uploadedFiles.map(f => ({ name: f.name, type: f.type, size: f.size }))
@@ -165,7 +158,6 @@ const HistoryPage: React.FC = () => {
     setError('');
 
     try {
-      console.log('调用MiniMax API...');
       // 调用MiniMax API
       const response = await minimaxService.sendMultimodalMessage(
         inputText.trim(),
@@ -173,7 +165,6 @@ const HistoryPage: React.FC = () => {
         messages.filter(m => m.role === 'user').slice(-5) // 最近5条用户消息作为上下文
       );
 
-      console.log('MiniMax API响应成功:', response.substring(0, 100) + '...');
 
       const assistantMessage: ChatMessage = {
         id: `assistant-${Date.now()}`,
@@ -184,7 +175,6 @@ const HistoryPage: React.FC = () => {
 
       setMessages(prev => [...prev, assistantMessage]);
 
-      console.log('开始自动更新报告...');
       // 自动更新家属简报和医生仪表盘
       await updateReports();
 
@@ -199,21 +189,15 @@ const HistoryPage: React.FC = () => {
   // 更新报告和仪表盘
   const updateReports = async () => {
     try {
-      console.log('开始更新报告和仪表盘...');
       setUpdateStatus(prev => ({ ...prev, familyReport: true, doctorDashboard: true }));
 
       // 生成家属简报
-      console.log('正在生成家属简报...');
       const familyReport = await minimaxService.generateFamilyReport(messages);
-      console.log('家属简报生成成功:', familyReport);
       
       // 生成医生报告
-      console.log('正在生成医生报告...');
       const doctorReport = await minimaxService.generateDoctorReport(messages);
-      console.log('医生报告生成成功:', doctorReport);
 
       // 调用API更新数据库 - 家属简报
-      console.log('正在更新家属简报到数据库...');
       const familyReportData = {
         summary: familyReport,
         highlights: ['对话积极活跃', '语言表达清晰', '情绪状态稳定'],
@@ -222,13 +206,10 @@ const HistoryPage: React.FC = () => {
         healthScore: 85,
         emotionalState: 'positive'
       };
-      console.log('家属简报请求数据:', familyReportData);
       
       const familyUpdateResponse = await ApiService.updateFamilyReport(familyReportData);
-      console.log('家属简报更新响应:', familyUpdateResponse);
 
       // 调用API更新数据库 - 医生仪表盘
-      console.log('正在更新医生仪表盘到数据库...');
       const doctorDashboardData = {
         patientId: user?.id || 'unknown',
         sessionData: {
@@ -245,10 +226,8 @@ const HistoryPage: React.FC = () => {
         },
         recommendations: ['继续观察症状变化', '定期复查', '保持用药规律']
       };
-      console.log('医生仪表盘请求数据:', doctorDashboardData);
       
       const doctorUpdateResponse = await ApiService.updateDoctorDashboard(doctorDashboardData);
-      console.log('医生仪表盘更新响应:', doctorUpdateResponse);
 
       setUpdateStatus({
         familyReport: false,
@@ -256,7 +235,6 @@ const HistoryPage: React.FC = () => {
         lastUpdate: new Date().toISOString()
       });
 
-      console.log('所有更新完成！');
       setSuccess('家属简报和医生仪表盘已更新！');
       setTimeout(() => setSuccess(''), 3000);
 

@@ -108,7 +108,6 @@ Deno.serve(async (req) => {
                     audioUrl = `data:audio/mpeg;base64,${base64Audio}`;
                 }
             } catch (ttsError) {
-                console.warn('语音合成失败:', ttsError.message);
                 // 语音合成失败不影响文本响应
             }
         }

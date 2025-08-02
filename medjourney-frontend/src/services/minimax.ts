@@ -39,10 +39,14 @@ export interface ChatMessage {
 class MiniMaxService {
   private apiKey: string;
   private baseUrl: string = 'https://api.minimax.chat/v1/text/chatcompletion_v2';
-  private groupId: string = '1948563511118405991';
+  private groupId: string;
 
   constructor() {
-    this.apiKey = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiJNZWRqb3VybmV5IiwiVXNlck5hbWUiOiJNZWRqb3VybmV5IiwiQWNjb3VudCI6IiIsIlN1YmplY3RJRCI6IjE5NDg1NjM1MTExMjI2MDAyOTUiLCJQaG9uZSI6IjEzOTAxNzYxMjk2IiwiR3JvdXBJRCI6IjE5NDg1NjM1MTExMTg0MDU5OTEiLCJQYWdlTmFtZSI6IiIsIk1haWwiOiIiLCJDcmVhdGVUaW1lIjoiMjAyNS0wNy0yNyAwNDozMDozMSIsIlRva2VuVHlwZSI6MSwiaXNzIjoibWluaW1heCJ9.XCWZU3wWNp0DE_uuE53sS27RJ33hNKtvTmL4Dv31ArQ2YUpO6Cn_hUj65_JrOcw-NXkX1M6G1otGY3znzA1ken8YpUUZlIWX5t2ClWBN29472FGNSZxTTihrTUtb6QWsysITblmExacjF1UNEkN8mc1K0tR0dlo_n7E5ZhnziROmyAh9iFYwiDf9ix029-ggNTJbQW-3fqnvxtBttnTDqQ3o-0CQv3LAo3Ufy5xgLP9dgNN0XwvIVe8SDCUTiJ11GzOWtAtmsjE2C2IGw74uBfW-W2ONAb6KqVjJvQuyvya_zQ8TiDqygBXztJljnxjerHh_oMMHPDiCqxZTtEh_3Q';
+    this.apiKey = import.meta.env.VITE_MINIMAX_API_KEY || '';
+    this.groupId = import.meta.env.VITE_MINIMAX_GROUP_ID || '';
+    
+    if (!this.apiKey || !this.groupId) {
+    }
   }
 
   // 发送聊天消息
@@ -93,11 +97,7 @@ class MiniMaxService {
     images: File[] = [],
     history: ChatMessage[] = []
   ): Promise<string> {
-    console.log('MiniMax多模态消息处理开始:', { 
-      textLength: text.length, 
-      imagesCount: images.length,
-      historyLength: history.length 
-    });
+    // MiniMax multimodal message processing
 
     // 转换历史消息格式
     const systemMessage: MiniMaxMessage = {
@@ -127,20 +127,16 @@ class MiniMaxService {
         content: msg.content
       }));
 
-    console.log('历史消息处理完成:', historyMessages.length);
+    // History messages processed
 
     // 处理图片上传
     let imageUrls: string[] = [];
     if (images.length > 0) {
-      console.log('开始处理图片文件:', images.map(img => ({ name: img.name, type: img.type, size: img.size })));
-      
       try {
         for (const image of images) {
-          console.log('处理图片:', image.name);
           const base64 = await this.fileToBase64(image);
           const dataUrl = `data:${image.type};base64,${base64}`;
           imageUrls.push(dataUrl);
-          console.log('图片处理完成:', image.name, '大小:', dataUrl.length);
         }
       } catch (error) {
         console.error('图片处理失败:', error);
@@ -161,7 +157,7 @@ class MiniMaxService {
         type: 'text',
         text: text
       });
-      console.log('文本内容已添加:', text.substring(0, 50) + '...');
+      // Text content added
     }
 
     // 添加图片内容
@@ -170,7 +166,7 @@ class MiniMaxService {
         type: 'image_url',
         image_url: { url }
       });
-      console.log(`图片${index + 1}已添加到消息内容`);
+      // Image added to message content
     });
 
     const userMessage: MiniMaxMessage = {
@@ -179,21 +175,13 @@ class MiniMaxService {
     };
 
     const allMessages = [systemMessage, ...historyMessages, userMessage];
-    console.log('最终消息结构:', {
-      totalMessages: allMessages.length,
-      hasImages: imageUrls.length > 0,
-      contentTypes: messageContent.map(c => c.type)
-    });
-
     try {
-      console.log('发送请求到MiniMax API...');
       const response = await this.sendMessage(allMessages, {
         temperature: 0.7,
         maxTokens: 2048
       });
 
       const result = response.choices[0]?.message?.content || '抱歉，我无法处理您的请求。';
-      console.log('MiniMax API响应成功:', result.substring(0, 100) + '...');
       return result;
     } catch (error) {
       console.error('MiniMax API调用失败:', error);

@@ -137,7 +137,6 @@ const DoctorReportPage: React.FC = () => {
   ];
   
   const downloadReport = () => {
-    console.log('下载详细报告...');
     alert('报告正在生成，请稍后...');
   };
   

@@ -79,7 +79,6 @@ const FamilySummaryPage: React.FC = () => {
   
   const generateReport = () => {
     // 生成PDF报告的逻辑
-    console.log('正在生成家属简报...');
     alert('报告正在生成，请稍后...');
   };
   

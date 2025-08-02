@@ -59,7 +59,6 @@ class AgoraService {
       
       this.callbacks.onConnectionStateChange(true);
       
-      console.log(`Agora initialized successfully. Channel: ${this.channelName}`);
     } catch (error) {
       console.error('Agora initialization failed:', error);
       this.callbacks.onError(`初始化失败: ${error}`);
@@ -72,13 +71,11 @@ class AgoraService {
     
     // 监听连接状态变化
     this.client.on('connection-state-change', (curState: ConnectionState, revState: ConnectionState) => {
-      console.log(`Connection state changed from ${revState} to ${curState}`);
       this.callbacks.onConnectionStateChange(curState === 'CONNECTED');
     });
     
     // 监听远端用户加入
     this.client.on('user-joined', (user) => {
-      console.log('Remote user joined:', user.uid);
     });
     
     // 监听远端用户发布音频
@@ -89,7 +86,6 @@ class AgoraService {
         if (remoteAudioTrack) {
           this.remoteAudioTracks.set(user.uid.toString(), remoteAudioTrack);
           remoteAudioTrack.play();
-          console.log('Subscribed to remote audio track');
           
           // 模拟AI席复消息
           this.simulateAIResponse();
@@ -101,14 +97,12 @@ class AgoraService {
     this.client.on('user-unpublished', (user, mediaType) => {
       if (mediaType === 'audio') {
         this.remoteAudioTracks.delete(user.uid.toString());
-        console.log('Remote user unpublished audio');
       }
     });
     
     // 监听用户离开
     this.client.on('user-left', (user) => {
       this.remoteAudioTracks.delete(user.uid.toString());
-      console.log('Remote user left:', user.uid);
     });
     
     // 监听错误
@@ -129,7 +123,6 @@ class AgoraService {
       // 开始音频级别监测
       this.startAudioLevelMonitoring();
       
-      console.log('Started recording and publishing audio');
     } catch (error) {
       console.error('Failed to start recording:', error);
       this.callbacks.onError('开始录音失败');
@@ -148,7 +141,6 @@ class AgoraService {
       // 停止音频级别监测
       this.stopAudioLevelMonitoring();
       
-      console.log('Stopped recording and unpublished audio');
     } catch (error) {
       console.error('Failed to stop recording:', error);
       this.callbacks.onError('停止录音失败');
@@ -177,7 +169,6 @@ class AgoraService {
   
   async sendTextMessage(text: string): Promise<void> {
     // 这里将来会集成TEN Framework来处理文本消息
-    console.log('Sending text message to TEN Agent:', text);
     
     // 模拟AI处理延迟
     setTimeout(() => {
@@ -187,7 +178,6 @@ class AgoraService {
   
   async sendImageMessage(imageUrl: string): Promise<void> {
     // 这里将来会集成TEN Framework来处理图片消息
-    console.log('Sending image message to TEN Agent:', imageUrl);
     
     // 模拟AI处理延迟
     setTimeout(() => {
@@ -249,7 +239,6 @@ class AgoraService {
       }
       
       this.callbacks.onConnectionStateChange(false);
-      console.log('Agora service disconnected');
     } catch (error) {
       console.error('Failed to disconnect Agora service:', error);
     }

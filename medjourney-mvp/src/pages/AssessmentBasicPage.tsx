@@ -106,7 +106,6 @@ const AssessmentBasicPage: React.FC = () => {
   const handleSubmit = () => {
     if (validateForm()) {
       // 这里应该保存数据到状态管理或后端
-      console.log('基础评估数据:', formData);
       
       // 导航到下一个阶段
       navigate(ROUTES.ASSESSMENT_CASE);

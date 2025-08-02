@@ -129,7 +129,6 @@ const AssessmentCasePage: React.FC = () => {
         // 保存会话到本地存储
         assessmentService.saveSessionToStorage();
         
-        console.log('病例资料数据已保存:', formData);
         navigate(ROUTES.ASSESSMENT_CHAT);
       } catch (error) {
         console.error('保存病例资料失败:', error);

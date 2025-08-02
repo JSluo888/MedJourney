@@ -138,11 +138,9 @@ export function useMessages(userId?: string) {
   const [state, setData, setLoading, setError] = useApiState<Message[]>([]);
 
   const fetchMessages = useCallback(async (id: string) => {
-    console.log('开始获取消息，用户ID:', id);
     setLoading(true);
     try {
       const messages = await api.messages.get(id);
-      console.log('获取消息成功:', messages.length, '条');
       setData(messages);
     } catch (error) {
       console.error('获取消息失败:', error);
@@ -203,10 +201,8 @@ export function useMessages(userId?: string) {
 
   useEffect(() => {
     if (userId) {
-      console.log('useMessages: 用户ID变化，重新获取消息:', userId);
       fetchMessages(userId);
     } else {
-      console.log('useMessages: 没有用户ID，设置空消息列表');
       setData([]);
     }
   }, [userId, fetchMessages, setData]);

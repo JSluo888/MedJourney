@@ -39,10 +39,14 @@ export interface ChatMessage {
 class MiniMaxService {
   private apiKey: string;
   private baseUrl: string = 'https://api.minimax.chat/v1/text/chatcompletion_v2';
-  private groupId: string = '1948563511118405991';
+  private groupId: string;
 
   constructor() {
-    this.apiKey = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJHcm91cE5hbWUiOiJNZWRqb3VybmV5IiwiVXNlck5hbWUiOiJNZWRqb3VybmV5IiwiQWNjb3VudCI6IiIsIlN1YmplY3RJRCI6IjE5NDg1NjM1MTExMjI2MDAyOTUiLCJQaG9uZSI6IjEzOTAxNzYxMjk2IiwiR3JvdXBJRCI6IjE5NDg1NjM1MTExMTg0MDU5OTEiLCJQYWdlTmFtZSI6IiIsIk1haWwiOiIiLCJDcmVhdGVUaW1lIjoiMjAyNS0wNy0yNyAwNDozMDozMSIsIlRva2VuVHlwZSI6MSwiaXNzIjoibWluaW1heCJ9.XCWZU3wWNp0DE_uuE53sS27RJ33hNKtvTmL4Dv31ArQ2YUpO6Cn_hUj65_JrOcw-NXkX1M6G1otGY3znzA1ken8YpUUZlIWX5t2ClWBN29472FGNSZxTTihrTUtb6QWsysITblmExacjF1UNEkN8mc1K0tR0dlo_n7E5ZhnziROmyAh9iFYwiDf9ix029-ggNTJbQW-3fqnvxtBttnTDqQ3o-0CQv3LAo3Ufy5xgLP9dgNN0XwvIVe8SDCUTiJ11GzOWtAtmsjE2C2IGw74uBfW-W2ONAb6KqVjJvQuyvya_zQ8TiDqygBXztJljnxjerHh_oMMHPDiCqxZTtEh_3Q';
+    this.apiKey = import.meta.env.VITE_MINIMAX_API_KEY || '';
+    this.groupId = import.meta.env.VITE_MINIMAX_GROUP_ID || '';
+    
+    if (!this.apiKey || !this.groupId) {
+    }
   }
 
   // 发送聊天消息

@@ -68,7 +68,6 @@ export const useTenFramework = (options: UseTenFrameworkOptions): UseTenFramewor
         onMessage: handleMessage,
         onStatusChange: handleStatusChange,
         onError: (error) => {
-          console.warn('TEN Framework错误 (不影响使用):', error.message);
           // 不调用handleError，避免显示错误给用户
         }
       };
@@ -79,7 +78,6 @@ export const useTenFramework = (options: UseTenFrameworkOptions): UseTenFramewor
       serviceRef.current = service;
       
     } catch (error) {
-      console.warn('TEN Framework连接失败，使用模拟模式:', error);
       // 在连接失败时，仍然创建服务实例，但使用模拟模式
       const config: TenFrameworkConfig = {
         appId: TEN_CONFIG.AGORA_APP_ID,
