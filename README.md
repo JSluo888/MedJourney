@@ -342,19 +342,13 @@ MedJourney/
 - 🧪 完善测试功能
 - 🎨 UI/UX优化
 
-### v1.0.0 (2025-07-20)
-- 🚀 初始版本发布
-- 🤖 AI对话功能
-- 📋 三阶段评估流程
-- 👥 虚拟患者系统
-- 📊 报告生成功能
-
 ## 📄 许可证
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
 ## 🙏 致谢
 
+- TEN Frame !!! 真的真的感谢
 - [MiniMax](https://www.minimax.chat/) - AI对话服务
 - [Agora](https://www.agora.io/) - 实时通信服务
 - [Supabase](https://supabase.com/) - 数据库服务

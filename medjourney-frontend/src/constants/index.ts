@@ -5,9 +5,9 @@ export const AGORA_APP_ID = 'd83b679bc7b3406c83f63864cb74aa99';
 
 // TEN Framework & 集成服务配置
 export const SERVICE_CONFIG = {
-  AGORA_APP_ID: 'd83b679bc7b3406c83f63864cb74aa99',
-  ELEVENLABS_API_KEY: 'sk_315efe2656c525c68c74b5b2ae5a25c0954b373548b9e1ac',
-  STEPFUN_API_KEY: '4kNO9CYMO1ddw4s20byLvrkYtBWXowdR1OcrY8Hi7tkapqi3gMAEAzNHCl3LKqFIy',
+  AGORA_APP_ID: import.meta.env.VITE_AGORA_APP_ID || 'd83b679bc7b3406c83f63864cb74aa99',
+  ELEVENLABS_API_KEY: import.meta.env.VITE_ELEVENLABS_API_KEY || '',
+  STEPFUN_API_KEY: import.meta.env.VITE_STEPFUN_API_KEY || '',
   STEPFUN_BASE_URL: 'https://api.stepfun.com/v1',
   ELEVENLABS_VOICE_ID: '21m00Tcm4TlvDq8ikWAM', // 中文女声
   ELEVENLABS_MODEL_ID: 'eleven_multilingual_v2'
