@@ -1,4 +1,4 @@
-# MedJourney - AI驱动的阿尔茨海默病患者陪伴平台
+# MedJourney - AI-Driven Companion Platform for Alzheimer's Patients
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
@@ -6,361 +6,315 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue.svg)](https://www.typescriptlang.org/)
 
 <div align="right">
-  <a href="README_EN.md">🇺🇸 English</a> | <a href="README.md">🇨🇳 中文</a>
+  <a href="README.md">🇺🇸 English</a> | <a href="README_CN.md">🇨🇳 中文</a>
 </div>
 
-## 📖 项目概述
+## 📖 Project Overview
 
-MedJourney 是一个专为阿尔茨海默病患者设计的AI驱动陪伴平台，集成了先进的AI技术、实时通信和医疗知识检索功能。平台通过多模态交互、智能对话和认知评估，为患者、家属和医护人员提供全方位的支持。
+MedJourney is an AI-driven companion platform specifically designed for Alzheimer's patients, integrating advanced AI technology, real-time communication, and medical knowledge retrieval. The platform provides comprehensive support for patients, families, and healthcare professionals through multimodal interaction, intelligent dialogue, and cognitive assessment.
 
-### 🎯 核心价值
-- **患者关怀**: 提供24/7的AI陪伴和认知支持
-- **家属支持**: 实时监控患者状态，提供专业建议
-- **医疗辅助**: 为医护人员提供详细的评估报告和分析
-- **数据驱动**: 基于AI的智能分析和预测
+### 🎯 Core Values
+- **Patient Care**: Provides 24/7 AI companionship and cognitive support
+- **Family Support**: Real-time monitoring of patient status with professional advice
+- **Medical Assistance**: Provides detailed assessment reports and analysis for healthcare professionals
+- **Data-Driven**: AI-powered intelligent analysis and prediction
 
-## 🔒 安全配置
+## 🔒 Security Configuration
 
-### 环境变量设置
-项目已配置为使用环境变量来保护敏感信息。请确保：
+### Environment Variables Setup
+The project is configured to use environment variables to protect sensitive information. Please ensure:
 
-1. **复制环境变量模板**:
+1. **Copy Environment Variable Templates**:
    ```bash
-   # 前端
+   # Frontend
    cp medjourney-frontend/env.example medjourney-frontend/.env
    
-   # 后端
+   # Backend
    cp medjourney-backend/env.example medjourney-backend/.env
    ```
 
-2. **配置API密钥**:
-   - MiniMax API Key (聊天功能)
-   - Stepfun API Key (TEN Framework 实时对话)
+2. **Configure API Keys**:
+   - MiniMax API Key (Chat functionality)
+   - Stepfun API Key (TEN Framework real-time conversation)
 
-3. **确保.env文件不被提交**:
-   - 已配置.gitignore
-   - 敏感信息不会上传到GitHub
+3. **Ensure .env files are not committed**:
+   - .gitignore is configured
+   - Sensitive information will not be uploaded to GitHub
 
-## ✨ 主要功能
+## ✨ Main Features
 
-### 🤖 AI智能对话
-- **多模态交互**: 支持语音、文字、图像输入
-- **实时对话**: 基于MiniMax API的智能对话系统
-- **情感识别**: AI驱动的情绪状态分析
-- **认知评估**: 嵌入MMSE式评估的自然对话
+### 🤖 AI Intelligent Dialogue
+- **Multimodal Interaction**: Supports voice, text, and image input
+- **Real-time Dialogue**: Intelligent dialogue system based on MiniMax API
+- **Emotion Recognition**: AI-driven emotional state analysis
+- **Cognitive Assessment**: Natural dialogue embedded with MMSE-style assessment
 
-### 📋 三阶段评估流程
-1. **基础评估**: 收集患者信息、症状和家族史
-2. **案例上传**: 上传医疗图像和案例描述
-3. **AI对话**: 智能对话与认知测试
+### 📋 Three-Stage Assessment Process
+1. **Basic Assessment**: Collect patient information, symptoms, and family history
+2. **Case Upload**: Upload medical images and case descriptions
+3. **AI Dialogue**: Intelligent dialogue and cognitive testing
 
-### 👥 虚拟患者系统
-- **早期阶段**: 轻度认知障碍模拟
-- **中期阶段**: 中度症状模拟
-- **晚期阶段**: 重度症状模拟
+### 👥 Virtual Patient System
+- **Early Stage**: Mild cognitive impairment simulation
+- **Middle Stage**: Moderate symptom simulation
+- **Late Stage**: Severe symptom simulation
 
-### 📊 报告与分析
-- **家属简报**: 通俗易懂的健康状态报告
-- **医生报告**: 专业的医疗分析报告
-- **PDF报告**: 包含图表和详细分析的可下载报告
-- **社交分享**: 支持报告分享和传播
+### 📊 Reports and Analysis
+- **Family Summary**: Easy-to-understand health status reports
+- **Doctor Reports**: Professional medical analysis reports
+- **PDF Reports**: Downloadable reports with charts and detailed analysis
+- **Social Sharing**: Support for report sharing and dissemination
 
-### 🏥 病史助手（新增）
-- **多模态输入**: 支持文字、图片、文档上传
-- **智能整理**: AI自动整理非结构化病史信息
-- **实时更新**: 自动更新家属简报和医生仪表盘
-- **专业分析**: 生成结构化的病史摘要和建议
+### 🏥 Medical History Assistant (New)
+- **Multimodal Input**: Supports text, image, and document uploads
+- **Intelligent Organization**: AI automatically organizes unstructured medical history information
+- **Real-time Updates**: Automatically updates family summaries and doctor dashboards
+- **Professional Analysis**: Generates structured medical history summaries and recommendations
 
-## 🏗️ 技术架构
+## 🏗️ Technical Architecture
 
-### 前端技术栈
-- **框架**: React 18 + TypeScript + Vite
-- **样式**: Tailwind CSS + Radix UI
-- **状态管理**: Zustand
-- **路由**: React Router DOM
-- **实时通信**: TEN Framework WebSocket
-- **图表**: Recharts
-- **PDF生成**: jsPDF + html2canvas
+### Frontend Technology Stack
+- **Framework**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + Radix UI
+- **State Management**: Zustand
+- **Routing**: React Router DOM
+- **Real-time Communication**: TEN Framework WebSocket
+- **Charts**: Recharts
+- **PDF Generation**: jsPDF + html2canvas
 
-### 后端技术栈
-- **运行时**: Node.js 18+ + Express + TypeScript
-- **AI服务**: MiniMax API + TEN Framework
-- **数据库**: 本地 SQLite
-- **文件处理**: Multer + Sharp
-- **认证**: JWT + bcryptjs
-- **实时通信**: WebSocket
+### Backend Technology Stack
+- **Runtime**: Node.js 18+ + Express + TypeScript
+- **AI Services**: MiniMax API + TEN Framework
+- **Database**: Local SQLite
+- **File Processing**: Multer + Sharp
+- **Authentication**: JWT + bcryptjs
+- **Real-time Communication**: WebSocket
 
-### AI/ML服务
-- **大语言模型**: MiniMax API (abab6.5s-chat)
-- **实时对话**: Stepfun API (TEN Framework)
-- **图像分析**: 多模态AI处理
-- **知识检索**: RAG (Retrieval-Augmented Generation)
+### AI/ML Services
+- **Large Language Model**: MiniMax API (abab6.5s-chat)
+- **Real-time Dialogue**: Stepfun API (TEN Framework)
+- **Image Analysis**: Multimodal AI processing
+- **Knowledge Retrieval**: RAG (Retrieval-Augmented Generation)
 
-### 部署与运维
-- **容器化**: Docker + Docker Compose
-- **反向代理**: Nginx
-- **环境管理**: 环境变量配置
-- **监控**: Winston日志系统
+### Deployment and Operations
+- **Containerization**: Docker + Docker Compose
+- **Reverse Proxy**: Nginx
+- **Environment Management**: Environment variable configuration
+- **Monitoring**: Winston logging system
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 环境要求
+### Environment Requirements
 - Node.js 18+
-- npm 或 pnpm
-- Docker & Docker Compose (可选)
+- npm or pnpm
+- Docker & Docker Compose (optional)
 
-### 1. 克隆项目
+### 1. Clone the Project
 ```bash
 git clone https://github.com/yourusername/MedJourney.git
 cd MedJourney
 ```
 
-### 2. 环境配置
+### 2. Environment Configuration
 ```bash
-# 前端配置
+# Frontend configuration
 cd medjourney-frontend
 cp env.example .env
-# 编辑 .env 文件，配置必要的API密钥
+# Edit .env file to configure necessary API keys
 
-# 后端配置
+# Backend configuration
 cd ../medjourney-backend
 cp env.example .env
-# 编辑 .env 文件，配置数据库和API密钥
+# Edit .env file to configure database and API keys
 ```
 
-### 3. 安装依赖
+### 3. Install Dependencies
 ```bash
-# 前端依赖
+# Frontend dependencies
 cd medjourney-frontend
 npm install
 
-# 后端依赖
+# Backend dependencies
 cd ../medjourney-backend
 npm install
 ```
 
-### 4. 启动开发环境
+### 4. Start Development Environment
 ```bash
-# 启动后端服务
+# Start backend service
 cd medjourney-backend
 npm run dev
 
-# 启动前端服务
+# Start frontend service
 cd ../medjourney-frontend
 npm run dev
 ```
 
-### 5. 访问应用
-- 前端: http://localhost:5173
-- 后端API: http://localhost:3000
+### 5. Access the Application
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
 
-## 🔧 配置说明
+## 🔧 Configuration Guide
 
-### 必需的环境变量
+### Required Environment Variables
 
-#### 前端 (.env)
+#### Frontend (.env)
 ```env
-# MiniMax API配置 (聊天功能)
+# MiniMax API Configuration (Chat functionality)
 VITE_MINIMAX_API_KEY=your_minimax_api_key
 VITE_MINIMAX_GROUP_ID=your_group_id
 
-# Stepfun AI配置 (TEN Framework 实时对话)
+# Stepfun AI Configuration (TEN Framework real-time conversation)
 VITE_STEPFUN_API_KEY=your_stepfun_api_key
 
-# TEN Framework配置
+# TEN Framework Configuration
 VITE_TEN_WS_URL=ws://localhost:8080
 VITE_TEN_API_URL=http://localhost:8080
 
-# API基础URL
+# API Base URL
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
-#### 后端 (.env)
+#### Backend (.env)
 ```env
-# AI服务配置
+# AI Services Configuration
 MINIMAX_API_KEY=your_minimax_api_key
 MINIMAX_GROUP_ID=your_group_id
 STEPFUN_API_KEY=your_stepfun_api_key
 
-# JWT配置
+# JWT Configuration
 JWT_SECRET=your_jwt_secret
 
-# 服务器配置
+# Server Configuration
 PORT=3000
 NODE_ENV=development
 
-# 日志配置
+# Logging Configuration
 LOG_LEVEL=info
 ```
 
-## 📱 核心页面
+## 📱 Core Pages
 
-### 主要功能页面
-- **仪表盘** (`/dashboard`): 系统概览和快速操作
-- **病史助手** (`/history`): AI驱动的病史整理和对话
-- **基础评估** (`/assessment/basic`): 患者基础信息收集
-- **案例上传** (`/assessment/case`): 医疗文档和图像上传
-- **AI对话** (`/assessment/chat`): 智能对话和认知评估
-- **虚拟患者** (`/virtual-patients`): 不同阶段的患者模拟
+### Main Feature Pages
+- **Dashboard** (`/dashboard`): System overview and quick operations
+- **Medical History Assistant** (`/history`): AI-driven medical history organization and dialogue
+- **Basic Assessment** (`/assessment/basic`): Patient basic information collection
+- **Case Upload** (`/assessment/case`): Medical document and image upload
+- **AI Dialogue** (`/assessment/chat`): Intelligent dialogue and cognitive assessment
+- **Virtual Patients** (`/virtual-patients`): Different stage patient simulation
 
-### 报告页面
-- **家属简报** (`/reports/family`): 面向家属的健康报告
-- **医生报告** (`/reports/doctor`): 专业的医疗分析报告
-- **分享报告** (`/reports/share`): 报告分享和传播
+### Report Pages
+- **Family Summary** (`/reports/family`): Health reports for families
+- **Doctor Reports** (`/reports/doctor`): Professional medical analysis reports
+- **Share Reports** (`/reports/share`): Report sharing and dissemination
 
-## 🔌 API接口
+## 🔌 API Interfaces
 
-### 核心服务接口
+### Core Service Interfaces
 ```http
-# 对话管理
-POST /api/conversation/start          # 开始对话会话
-POST /api/conversation/:id/message    # 发送消息
-GET  /api/conversation/:id/analysis   # 获取对话分析
+# Conversation Management
+POST /conversation/create
+POST /conversation/:sessionId/message
+GET /conversation/:sessionId/messages
+GET /conversation/:sessionId/analysis
+POST /conversation/:sessionId/end
 
-# 评估管理
-POST /api/assessment/basic            # 提交基础评估
-POST /api/assessment/case             # 上传案例文件
-POST /api/assessment/chat             # 提交聊天评估
+# Assessment Management
+POST /assessment/session
+POST /assessment/:sessionId/basic
+POST /assessment/:sessionId/case
+POST /assessment/:sessionId/complete
+GET /assessment/:sessionId/report
 
-# 报告生成
-GET  /api/reports/family/:id          # 生成家属简报
-GET  /api/reports/doctor/:id          # 生成医生报告
-POST /api/reports/share               # 分享报告
+# File Upload
+POST /upload/image
+POST /upload/medical-history
 
-# 病史助手
-POST /api/history/update-family       # 更新家属简报
-POST /api/history/update-doctor       # 更新医生仪表盘
-GET  /api/history/realtime            # 获取实时数据
+# Reports
+GET /reports/family-summary
+GET /reports/doctor/sessions
+GET /reports/doctor/:sessionId
+
+# Patient History
+POST /patient/history
+GET /patient/history
+
+# Dashboard
+GET /dashboard/stats
 ```
 
-### 健康检查接口
-```http
-GET  /api/health                      # 系统健康检查
-POST /api/test/stepfun               # Stepfun AI服务测试
-GET  /api/test/status                # 服务状态检查
+## 🛠️ Development
+
+### Project Structure
+```
+medjourney/
+├── medjourney-frontend/     # React frontend application
+├── medjourney-backend/      # Node.js backend API
+├── ten-framework/          # TEN Framework integration
+├── docs/                   # Documentation
+└── docker-compose.yml      # Docker configuration
 ```
 
-## 🚀 部署
+### Key Technologies
+- **MiniMax API**: Core AI engine for intelligent dialogue and multimodal input processing
+- **TEN Framework**: Open-source real-time multimodal conversational AI framework
+- **Stepfun AI**: LLM integrated with TEN Framework for real-time AI responses
+- **Local SQLite**: Local data storage for patient data, conversations, and assessments
 
-### Docker部署
+## 🚀 Deployment
+
+### Docker Deployment
 ```bash
-# 构建并启动所有服务
+# Build and start
 docker-compose up --build
 
-# 后台运行
-docker-compose up -d --build
+# Access application
+# Frontend: http://localhost:3000
+# Backend: http://localhost:3001
+# Full-stack: http://localhost:80
 ```
 
-### 生产环境部署
+### Manual Deployment
 ```bash
-# 构建生产版本
+# Build frontend
 cd medjourney-frontend
 npm run build
 
+# Build backend
 cd ../medjourney-backend
 npm run build
 
-# 启动生产服务
+# Start services
 npm start
 ```
 
-## 📊 项目结构
+## 🤝 Contributing
 
-```
-MedJourney/
-├── medjourney-frontend/          # 前端应用
-│   ├── src/
-│   │   ├── pages/               # 页面组件
-│   │   ├── components/          # 通用组件
-│   │   ├── services/            # API服务
-│   │   ├── hooks/               # 自定义Hooks
-│   │   ├── stores/              # 状态管理
-│   │   └── utils/               # 工具函数
-│   └── package.json
-├── medjourney-backend/           # 后端API
-│   ├── src/
-│   │   ├── controllers/         # 控制器
-│   │   ├── services/            # 业务逻辑
-│   │   ├── middleware/          # 中间件
-│   │   ├── routes/              # 路由定义
-│   │   └── utils/               # 工具函数
-│   └── package.json
-├── docs/                        # 项目文档
-├── docker-compose.yml           # Docker配置
-├── nginx.conf                   # Nginx配置
-└── README.md                    # 项目说明
-```
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 🔒 安全特性
+## 📄 License
 
-- **JWT认证**: 安全的用户认证机制
-- **API限流**: 防止API滥用
-- **数据加密**: 敏感数据加密传输
-- **CORS配置**: 跨域请求安全控制
-- **输入验证**: 严格的数据验证和清理
-- **环境变量**: 敏感信息通过环境变量管理
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🧹 项目清理
+## 🙏 Acknowledgments
 
-已完成以下清理工作：
-- ✅ 删除测试和调试文件
-- ✅ 移除重复的前端项目
-- ✅ 清理构建产物
-- ✅ 移除硬编码的API密钥
-- ✅ 配置环境变量
-- ✅ 更新.gitignore文件
-- ✅ 减少console.log语句
+- **TEN Framework**: Open-source real-time conversational AI framework
+- **MiniMax**: AI language model provider
+- **Stepfun**: Real-time AI conversation provider
+- **React Community**: Frontend framework and ecosystem
+- **Node.js Community**: Backend runtime and ecosystem
 
-## 🤝 贡献指南
+## 📞 Support
 
-### 开发环境设置
-1. Fork项目仓库
-2. 创建功能分支: `git checkout -b feature/amazing-feature`
-3. 提交更改: `git commit -m 'Add some amazing feature'`
-4. 推送分支: `git push origin feature/amazing-feature`
-5. 创建Pull Request
-
-### 代码规范
-- 使用TypeScript严格模式
-- 遵循ESLint规则
-- 编写单元测试
-- 添加JSDoc注释
-- 避免硬编码敏感信息
-
-## 📝 更新日志
-
-### v2.1.0 (2025-01-27)
-- 🔒 安全改进：移除硬编码API密钥
-- 🧹 代码清理：删除不必要的文件和代码
-- 📝 文档更新：添加安全配置说明
-- 🔧 环境配置：完善环境变量管理
-
-### v2.0.0 (2025-07-27)
-- ✨ 新增病史助手功能
-- 🔧 集成MiniMax API
-- 📊 实时数据更新机制
-- 🧪 完善测试功能
-- 🎨 UI/UX优化
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
-## 🙏 致谢
-
-- TEN Frame !!! 真的真的感谢
-- [MiniMax](https://www.minimax.chat/) - AI对话服务
-- [Agora](https://www.agora.io/) - 实时通信服务
-- [Supabase](https://supabase.com/) - 数据库服务
-- [Pinecone](https://www.pinecone.io/) - 向量数据库
-- [ElevenLabs](https://elevenlabs.io/) - 语音合成服务
-
-## 📞 联系我们
-
-- **项目主页**: https://github.com/yourusername/MedJourney
-- **在线演示**: https://06jy00o1s5lb.space.minimax.io
-- **问题反馈**: [GitHub Issues](https://github.com/yourusername/MedJourney/issues)
+If you encounter any issues or have questions:
+1. Check the [Issues](https://github.com/yourusername/MedJourney/issues) page
+2. Create a new issue with detailed information
+3. Contact the development team
 
 ---
 
-**MedJourney** - 让AI陪伴每一位阿尔茨海默病患者 🏥💙
+**MedJourney** - Empowering Alzheimer's patients with AI companionship and support. 
