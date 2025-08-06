@@ -5,6 +5,10 @@
 [![React](https://img.shields.io/badge/React-18+-blue.svg)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue.svg)](https://www.typescriptlang.org/)
 
+<div align="right">
+  <a href="README_EN.md">🇺🇸 English</a> | <a href="README.md">🇨🇳 中文</a>
+</div>
+
 ## 📖 项目概述
 
 MedJourney 是一个专为阿尔茨海默病患者设计的AI驱动陪伴平台，集成了先进的AI技术、实时通信和医疗知识检索功能。平台通过多模态交互、智能对话和认知评估，为患者、家属和医护人员提供全方位的支持。
@@ -30,11 +34,8 @@ MedJourney 是一个专为阿尔茨海默病患者设计的AI驱动陪伴平台�
    ```
 
 2. **配置API密钥**:
-   - MiniMax API Key
-   - Agora App ID & Token
-   - Supabase 配置
-   - ElevenLabs API Key
-   - Stepfun API Key
+   - MiniMax API Key (聊天功能)
+   - Stepfun API Key (TEN Framework 实时对话)
 
 3. **确保.env文件不被提交**:
    - 已配置.gitignore
@@ -77,22 +78,21 @@ MedJourney 是一个专为阿尔茨海默病患者设计的AI驱动陪伴平台�
 - **样式**: Tailwind CSS + Radix UI
 - **状态管理**: Zustand
 - **路由**: React Router DOM
-- **实时通信**: Agora Web SDK
+- **实时通信**: TEN Framework WebSocket
 - **图表**: Recharts
 - **PDF生成**: jsPDF + html2canvas
 
 ### 后端技术栈
 - **运行时**: Node.js 18+ + Express + TypeScript
 - **AI服务**: MiniMax API + TEN Framework
-- **数据库**: Supabase (PostgreSQL)
-- **向量数据库**: Pinecone
+- **数据库**: 本地 SQLite
 - **文件处理**: Multer + Sharp
 - **认证**: JWT + bcryptjs
 - **实时通信**: WebSocket
 
 ### AI/ML服务
 - **大语言模型**: MiniMax API (abab6.5s-chat)
-- **语音合成**: ElevenLabs
+- **实时对话**: Stepfun API (TEN Framework)
 - **图像分析**: 多模态AI处理
 - **知识检索**: RAG (Retrieval-Augmented Generation)
 
@@ -160,13 +160,16 @@ npm run dev
 
 #### 前端 (.env)
 ```env
-# MiniMax API配置
+# MiniMax API配置 (聊天功能)
 VITE_MINIMAX_API_KEY=your_minimax_api_key
 VITE_MINIMAX_GROUP_ID=your_group_id
 
-# Agora配置
-VITE_AGORA_APP_ID=your_agora_app_id
-VITE_AGORA_APP_TOKEN=your_agora_token
+# Stepfun AI配置 (TEN Framework 实时对话)
+VITE_STEPFUN_API_KEY=your_stepfun_api_key
+
+# TEN Framework配置
+VITE_TEN_WS_URL=ws://localhost:8080
+VITE_TEN_API_URL=http://localhost:8080
 
 # API基础URL
 VITE_API_BASE_URL=http://localhost:3000/api
@@ -174,23 +177,20 @@ VITE_API_BASE_URL=http://localhost:3000/api
 
 #### 后端 (.env)
 ```env
-# 数据库配置
-DATABASE_URL=your_supabase_database_url
-SUPABASE_URL=your_supabase_url
-SUPABASE_ANON_KEY=your_supabase_anon_key
-
 # AI服务配置
 MINIMAX_API_KEY=your_minimax_api_key
 MINIMAX_GROUP_ID=your_group_id
 STEPFUN_API_KEY=your_stepfun_api_key
-ELEVENLABS_API_KEY=your_elevenlabs_api_key
-
-# Pinecone配置
-PINECONE_API_KEY=your_pinecone_api_key
-PINECONE_ENVIRONMENT=your_pinecone_environment
 
 # JWT配置
 JWT_SECRET=your_jwt_secret
+
+# 服务器配置
+PORT=3000
+NODE_ENV=development
+
+# 日志配置
+LOG_LEVEL=info
 ```
 
 ## 📱 核心页面
